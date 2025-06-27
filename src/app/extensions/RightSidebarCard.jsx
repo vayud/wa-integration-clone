@@ -26,7 +26,7 @@ hubspot.extend(() => (
 				<Heading>WhatsApp Integration</Heading>
 				<Flex align="center" gap="xs">
 					<Text weight="bold">Subscription Status:</Text>
-					<Tag color="success">Active</Tag>
+					<Tag variant="success">Active</Tag>
 				</Flex>
 				{subscriptionProps.map((prop) => (
 					<Flex key={prop.label} gap="xs">
