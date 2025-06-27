@@ -1,0 +1,21 @@
+{
+	"type": "crm-card",
+	"data": {
+		"title": "Example Card",
+		"description": "An example UI extension card.",
+		"location": "crm.record.tab",
+		"uid": "unique-extension-name",
+		"module": {
+			"file": "Example.jsx"
+		},
+		"objectTypes": [
+			{
+				"name": "contacts"
+			}
+		],
+		"previewImage": {
+			"file": "assets/card-preview.jpg",
+			"altText": "A short description of the preview image."
+		}
+	}
+}

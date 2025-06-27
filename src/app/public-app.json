@@ -1,0 +1,52 @@
+{
+  "name": "WhatsApp Integration (New)",
+  "uid": "tf-whatsapp-integration-new",
+  "description": "WhatsApp Business API Integration React",
+  "logo": "./logo.png",
+  "auth": {
+    "redirectUrls": [
+      "http://localhost:3000/oauth",
+      "http://localhost/projects/whatsapp-integration/process.php",
+      "https://whatsapp-integration.transfunnel.io/process.php"
+    ],
+    "requiredScopes": [
+      "account-info.security.read",
+      "automation",
+      "crm.objects.contacts.read",
+      "crm.objects.contacts.write",
+      "crm.objects.owners.read",
+      "crm.objects.users.read",
+      "oauth",
+      "tickets",
+      "timeline"
+    ],
+    "optionalScopes": [
+      "crm.schemas.contacts.read",
+      "crm.schemas.contacts.write"
+    ],
+    "conditionallyRequiredScopes": [],
+    "advancedScopeSettingsEnabled": true
+  },
+  "allowedUrls": [],
+  "permittedUrls": {
+    "fetch": [],
+    "iframe": [],
+    "img": []
+  },
+  "extensions": {
+    "crm": {
+      "cards": [
+        {
+          "file": "./extensions/example-card.json"
+        },
+        {
+          "file": "./extensions/right-sidebar-card.json"
+        }
+      ]
+    }
+  },
+  "support": {
+    "supportEmail": "productsupport@transfunnel.com",
+    "documentationUrl": "https://www.transfunnel.com/marketplace/hubspot-whatsapp-integration/a-complete-guide"
+  }
+}
