@@ -24,7 +24,7 @@ import {
 // Helper to build query string
 const buildQuery = (params) =>
 	Object.entries(params)
-		.filter(([key, val]) => val != null && val !== '')
+		.filter(([key, val]) => val != null && val !== "")
 		.map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
 		.join("&");
 
@@ -37,11 +37,25 @@ const STATUS_VARIANT_MAP = {
 	Inactive: "default",
 };
 
-const DynamicCard = ({ context, openIframe }) => {
-	console.log(context);
+const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 	const [data, setData] = useState(null);
+	const [contactProperties, setContactProperties] = useState({});
 
 	useEffect(() => {
+		const loadProperties = async () => {
+			try {
+				const props = await fetchCrmObjectProperties(["email", "phone", "mobilephone"]);
+				setContactProperties(props);
+			} catch (err) {
+				console.error("Error fetching CRM properties", err);
+			}
+		};
+		loadProperties();
+	}, [fetchCrmObjectProperties]);
+
+	useEffect(() => {
+		if (!contactProperties.phone && !contactProperties.mobilephone && !contactProperties.email) return;
+
 		const fetchData = async () => {
 			const params = {
 				userId: context.user.id,
@@ -51,9 +65,9 @@ const DynamicCard = ({ context, openIframe }) => {
 				portalId: context.portal.id,
 				firstname: context.user.firstName,
 				lastname: context.user.lastName,
-				// phone: context.object?.properties?.phone,
-				email: context.user.email,
-				// mobilephone: context.object?.properties?.mobilephone,
+				email: contactProperties.email,
+				phone: contactProperties.phone,
+				mobilephone: contactProperties.mobilephone,
 			};
 
 			const url = `https://whatsapp-integration.transfunnel.io/react/crm-card-react.php?${buildQuery(params)}`;
@@ -69,7 +83,7 @@ const DynamicCard = ({ context, openIframe }) => {
 			}
 		};
 		fetchData();
-	}, [context]);
+	}, [context, contactProperties]);
 
 	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
 
@@ -159,4 +173,10 @@ const DynamicCard = ({ context, openIframe }) => {
 	);
 };
 
-hubspot.extend(({ context, actions }) => <DynamicCard context={context} openIframe={actions.openIframeModal} />);
+hubspot.extend(({ context, actions }) => (
+	<DynamicCard
+		context={context}
+		openIframe={actions.openIframeModal}
+		fetchCrmObjectProperties={actions.fetchCrmObjectProperties}
+	/>
+));
