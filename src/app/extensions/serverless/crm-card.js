@@ -1,12 +1,23 @@
 // filepath: /serverless/crm-card.js
 export default async (context, sendResponse) => {
-	// You can access query params via context.params
-	// Example: const { userId, portalId } = context.params;
-	// Build your response object here
-	sendResponse({
-		statusCode: 200,
-		body: {
-			// ...your card data here...
-		},
-	});
+	const params = context.params;
+	const query = Object.entries(params)
+		.map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
+		.join("&");
+
+	const phpUrl = `https://whatsapp-integration.transfunnel.io/react/crm-card-react.php?${query}`;
+
+	try {
+		const res = await fetch(phpUrl);
+		const data = await res.json();
+		sendResponse({
+			statusCode: 200,
+			body: data,
+		});
+	} catch (error) {
+		sendResponse({
+			statusCode: 500,
+			body: { error: "Failed to fetch data from PHP endpoint." },
+		});
+	}
 };

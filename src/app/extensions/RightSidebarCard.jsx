@@ -38,7 +38,7 @@ const DynamicCard = ({ context }) => {
 				mobilephone: context.object?.properties?.mobilephone,
 			};
 
-			const url = `https://whatsapp-integration.transfunnel.io/react/crm-card-react.php?${buildQuery(params)}`;
+			const url = `/serverless/crm-card?${buildQuery(params)}`;
 			const res = await fetch(url);
 			const json = await res.json();
 			setData(json[params.portalId]);
