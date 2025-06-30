@@ -88,12 +88,12 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
 
 	const billing = data.billing;
-	const guides = data.guides;
 	const frames = data.frames;
+	const guides = data.guides;
 
 	return (
-		<Flex direction={"column"} gap={"md"}>
-			<Flex direction={"column"} gap={"md"}>
+		<Flex direction={"column"} gap={"lg"}>
+			<Flex direction={"column"} gap={"sm"}>
 				<Tile compact={true}>
 					<Flex gap="xs">
 						<Text format={{ fontWeight: "bold" }}>Subscription Status:</Text>
@@ -108,14 +108,13 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 						<Text>${billing.amount}</Text>
 					</Flex>
 				</Tile>
-			</Flex>
 
-			<Flex direction="column" gap="small">
 				<Tile compact={true}>
 					<Link href={guides.setup} target="_blank">
 						Integration Setup Guide
 					</Link>
 				</Tile>
+
 				<Tile compact={true}>
 					<Link href={guides.templates} target="_blank">
 						Templates Guide
@@ -146,7 +145,7 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 						variant={"secondary"}
 						onClick={() =>
 							openIframe({
-								url: frames.conversation.url,
+								uri: frames.conversation.url,
 								title: frames.conversation.label,
 								width: frames.conversation.width,
 								height: frames.conversation.height,
@@ -157,18 +156,6 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 					</Button>
 				</ButtonRow>
 			</Flex>
-
-			{frames?.customerPortal?.url ? (
-				<Flex direction="column" gap="small">
-					<Tile compact={true}>
-						<Link href={frames.customerPortal.url} target="_blank">
-							{frames.customerPortal.label}
-						</Link>
-					</Tile>
-				</Flex>
-			) : (
-				<></>
-			)}
 		</Flex>
 	);
 };
