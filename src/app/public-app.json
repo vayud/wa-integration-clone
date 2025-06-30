@@ -48,9 +48,6 @@
     "crm": {
       "cards": [
         {
-          "file": "./extensions/example-card.json"
-        },
-        {
           "file": "./extensions/whatsapp-card.json"
         }
       ]
