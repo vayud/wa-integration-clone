@@ -1,9 +1,9 @@
 {
-  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/RightSidebarCard.jsx",
+  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/WhatsappCard.jsx",
   "modules": {
     "internal": [
       {
-        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/RightSidebarCard.jsx",
+        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/WhatsappCard.jsx",
         "renderedExports": []
       }
     ],
