@@ -1,4 +1,6 @@
 import React from "react";
+import { useState } from "react";
+import { useEffect } from "react";
 import {
 	hubspot,
 	Card,
@@ -8,6 +10,7 @@ import {
 	Tag,
 	Box,
 	Button,
+	LoadingSpinner,
 	ButtonRow,
 	Dropdown,
 	Tile,
@@ -18,87 +21,142 @@ import {
 	Divider,
 } from "@hubspot/ui-extensions";
 
-const subscriptionProps = [
-	{ label: "Billing Period", value: "Perpetual" },
-	{ label: "Amount", value: "$432.00" },
-];
+// Helper to build query string
+const buildQuery = (params) =>
+	Object.entries(params)
+		.filter(([key, val]) => val != null && val !== '')
+		.map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
+		.join("&");
 
-const guides = [
-	{
-		title: "Integration Setup Guide",
-		description: "Setup Guide for WhatsApp Integration",
-		link: "https://whatsapp-integration.transfunnel.io/install-guide.php?portalId=145667942",
-	},
-	{
-		title: "Templates Guide",
-		description: "Templates Guide for Twilio Content Template Builder",
-		link: "https://whatsapp-integration.transfunnel.io/templates-guide.php",
-	},
-];
+// Mapping for billing status to Tag variant
+const STATUS_VARIANT_MAP = {
+	Active: "success",
+	Cancelled: "danger",
+	Trialing: "info",
+	Paused: "warning",
+	Inactive: "default",
+};
 
-hubspot.extend(() => (
-	<Flex direction={"column"} gap={"md"}>
+const DynamicCard = ({ context, openIframe }) => {
+	console.log(context);
+	const [data, setData] = useState(null);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			const params = {
+				userId: context.user.id,
+				userEmail: context.user.email,
+				associatedObjectId: context.crm.objectId,
+				associatedObjectType: context.crm.objectTypeId,
+				portalId: context.portal.id,
+				firstname: context.user.firstName,
+				lastname: context.user.lastName,
+				// phone: context.object?.properties?.phone,
+				email: context.user.email,
+				// mobilephone: context.object?.properties?.mobilephone,
+			};
+
+			const url = `https://whatsapp-integration.transfunnel.io/react/crm-card-react.php?${buildQuery(params)}`;
+			try {
+				const response = await hubspot.fetch(url, {
+					timeout: 2_000,
+					method: "GET",
+				});
+				const data = await response.json();
+				setData(data[params.portalId]);
+			} catch (err) {
+				console.error("Something went wrong", err);
+			}
+		};
+		fetchData();
+	}, [context]);
+
+	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
+
+	const billing = data.billing;
+	const guides = data.guides;
+	const frames = data.frames;
+
+	return (
 		<Flex direction={"column"} gap={"md"}>
-			<Tile compact={true}>
-				<Flex align="center" gap="xs">
-					<Text format={{ fontWeight: "bold" }}>Subscription Status:</Text>
-					<Tag variant="success">Active</Tag>
-				</Flex>
-				{subscriptionProps.map((prop) => (
-					<Flex key={prop.label} gap="xs">
-						<Text format={{ fontWeight: "bold" }}>{prop.label}:</Text>
-						<Text>{prop.value}</Text>
-					</Flex>
-				))}
-			</Tile>
-			{guides.map((guide) => (
+			<Flex direction={"column"} gap={"md"}>
 				<Tile compact={true}>
-					<Link href={guide.link} target="_blank">
-						{guide.title}
+					<Flex gap="xs">
+						<Text format={{ fontWeight: "bold" }}>Subscription Status:</Text>
+						<Tag variant={STATUS_VARIANT_MAP[billing.status] || "default"}>{billing.status}</Tag>
+					</Flex>
+					<Flex gap="xs">
+						<Text format={{ fontWeight: "bold" }}>Billing Period:</Text>
+						<Text>{billing.period}</Text>
+					</Flex>
+					<Flex gap="xs">
+						<Text format={{ fontWeight: "bold" }}>Amount:</Text>
+						<Text>${billing.amount}</Text>
+					</Flex>
+				</Tile>
+			</Flex>
+
+			<Flex direction="column" gap="small">
+				<Tile compact={true}>
+					<Link href={guides.setup} target="_blank">
+						Integration Setup Guide
 					</Link>
 				</Tile>
-			))}
-			<Tile compact={true}>
-				<Link
-					href="https://whatsapp-integration.transfunnel.io/customer-portal.php?id=798866b115132b12514bd6e4bf838603e4228081f09eec5a45e97f21"
-					target="_blank"
-				>
-					Manage Subscription
-				</Link>
-			</Tile>
-		</Flex>
+				<Tile compact={true}>
+					<Link href={guides.templates} target="_blank">
+						Templates Guide
+					</Link>
+				</Tile>
+			</Flex>
 
-		<Flex direction={"row"} gap={"sm"} justify={"center"}>
-			<ButtonRow
-				dropDownButtonOptions={{
-					size: "sm",
-				}}
-			>
-				<Button
-					size={"sm"}
-					type={"button"}
-					variant={"primary"}
-					overlay={
-						<Modal id="default-modal" title="Send WhatsApp Message" aria-label="Send WhatsApp Message" width={"large"}>
-							<ModalBody>
-								<Text>Welcome to my modal. Thanks for stopping by!</Text>
-							</ModalBody>
-							<ModalFooter>
-								<Flex justify={"between"} gap={"md"}>
-									<Text format={{ fontWeight: "bold" }}> Transfunnel Consulting </Text>
-									<Text format={{ fontWeight: "bold" }}> All Rights Reserved &copy; 2025 </Text>
-								</Flex>
-							</ModalFooter>
-						</Modal>
-					}
-				>
-					Send WhatsApp Message
-				</Button>
+			<Flex gap="md" justify={"center"}>
+				<ButtonRow dropDownButtonOptions={{ size: "sm" }}>
+					<Button
+						size={"sm"}
+						type={"button"}
+						variant={"primary"}
+						onClick={() =>
+							openIframe({
+								uri: frames.form.url,
+								title: frames.form.label,
+								width: frames.form.width,
+								height: frames.form.height,
+							})
+						}
+					>
+						{frames.form.label}
+					</Button>
+					<Button
+						size={"sm"}
+						type={"button"}
+						variant={"secondary"}
+						onClick={() =>
+							openIframe({
+								url: frames.conversation.url,
+								title: frames.conversation.label,
+								width: frames.conversation.width,
+								height: frames.conversation.height,
+							})
+						}
+					>
+						{frames.conversation.label}
+					</Button>
+				</ButtonRow>
+			</Flex>
 
-				<Button size={"sm"} type={"button"} variant={"secondary"}>
-					View Conversation
-				</Button>
-			</ButtonRow>
+			{frames?.customerPortal?.url ? (
+				<Flex direction="column" gap="small">
+					<Tile compact={true}>
+						<Link href={frames.customerPortal.url} target="_blank">
+							{frames.customerPortal.label}
+						</Link>
+					</Tile>
+				</Flex>
+			) : (
+				<></>
+			)}
 		</Flex>
-	</Flex>
-));
+	);
+};
+
+hubspot.extend(({ context, actions }) => <DynamicCard context={context} openIframe={actions.openIframeModal} />);

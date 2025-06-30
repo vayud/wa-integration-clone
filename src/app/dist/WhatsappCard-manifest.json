@@ -23,13 +23,11 @@
           "Button",
           "ButtonRow",
           "Link",
+          "LoadingSpinner",
           "Tag",
           "Text",
           "Tile",
-          "Flex",
-          "Modal",
-          "ModalBody",
-          "ModalFooter"
+          "Flex"
         ]
       },
       {

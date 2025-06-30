@@ -13,6 +13,13 @@
 				"name": "contacts"
 			}
 		],
+		"fetchCrmObjectProperties": [
+			"email",
+			"firstname",
+			"lastname",
+			"mobilephone",
+			"phone"
+		],
 		"previewImage": {
 			"file": "assets/sidebar-card-preview.jpg",
 			"altText": "Preview of the right sidebar card."
