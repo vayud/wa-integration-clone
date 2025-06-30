@@ -4,9 +4,9 @@
 		"title": "WhatsApp Integration",
 		"description": "A custom card for the right sidebar on contact records.",
 		"location": "crm.record.sidebar",
-		"uid": "right-sidebar-card",
+		"uid": "whatsapp-card",
 		"module": {
-			"file": "RightSidebarCard.jsx"
+			"file": "WhatsappCard.jsx"
 		},
 		"objectTypes": [
 			{

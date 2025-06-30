@@ -27,11 +27,24 @@
     "conditionallyRequiredScopes": [],
     "advancedScopeSettingsEnabled": true
   },
-  "allowedUrls": [],
+  "allowedUrls": [
+    "https://whatsapp-integration.transfunnel.io/react/crm-card-react.php",
+    "http://localhost/projects/whatsapp-integration/react/crm-card-react.php"
+  ],
   "permittedUrls": {
-    "fetch": [],
-    "iframe": [],
-    "img": []
+    "fetch": [
+      "https://whatsapp-integration.transfunnel.io/react/crm-card-react.php",
+      "http://localhost/projects/whatsapp-integration/react/crm-card-react.php"
+    ],
+    "iframe": [
+      "https://whatsapp-integration.transfunnel.io/tw/single-send.php",
+      "https://whatsapp-integration.transfunnel.io/kl/single-send.php",
+      "https://whatsapp-integration.transfunnel.io/chats.php",
+      "https://whatsapp-integration.transfunnel.io/customer-portal.php"
+    ],
+    "img": [
+      "https://whatsapp-integration.transfunnel.io/assets"
+    ]
   },
   "extensions": {
     "crm": {
@@ -40,7 +53,7 @@
           "file": "./extensions/example-card.json"
         },
         {
-          "file": "./extensions/right-sidebar-card.json"
+          "file": "./extensions/whatsapp-card.json"
         }
       ]
     }

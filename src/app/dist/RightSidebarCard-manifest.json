@@ -22,13 +22,14 @@
         "renderedExports": [
           "Button",
           "ButtonRow",
-          "Card",
-          "Divider",
           "Link",
           "Tag",
           "Text",
           "Tile",
-          "Flex"
+          "Flex",
+          "Modal",
+          "ModalBody",
+          "ModalFooter"
         ]
       },
       {
