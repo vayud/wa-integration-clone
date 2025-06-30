@@ -21,14 +21,14 @@
         "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/node_modules/@hubspot/ui-extensions/dist/coreComponents.js",
         "renderedExports": [
           "Button",
+          "ButtonRow",
           "Card",
           "Divider",
-          "Heading",
           "Link",
           "Tag",
           "Text",
-          "Flex",
-          "Dropdown"
+          "Tile",
+          "Flex"
         ]
       },
       {
