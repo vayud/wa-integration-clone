@@ -1,0 +1,21 @@
+{
+	"type": "crm-card",
+	"data": {
+		"title": "WhatsApp Stats",
+		"description": "A custom card for the middle column on contact records.",
+		"location": "crm.record.tab",
+		"uid": "whatsapp-stats-card",
+		"module": {
+			"file": "ContactStats.jsx"
+		},
+		"objectTypes": [
+			{
+				"name": "contacts"
+			}
+		],
+		"previewImage": {
+			"file": "assets/stats-card-preview.png",
+			"altText": "Preview of the card."
+		}
+	}
+}

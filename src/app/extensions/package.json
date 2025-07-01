@@ -18,11 +18,18 @@
   },
   "cards": [
     {
-      "id": "whatsapp-card",
+      "id": "whatsapp-crm-card",
       "title": "WhatsApp Integration",
       "description": "A custom card for the right sidebar on contact records.",
       "main": "WhatsappCard.jsx",
       "previewImage": "assets/sidebar-card-preview.jpg"
+    },
+    {
+      "id": "whatsapp-stats-card",
+      "title": "WhatsApp Stats",
+      "description": "A custom card for the middle column on contact records.",
+      "main": "ContactStats.jsx",
+      "previewImage": "assets/stats-card-preview.png"
     }
   ]
 }
