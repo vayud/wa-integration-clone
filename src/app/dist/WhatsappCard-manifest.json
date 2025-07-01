@@ -22,6 +22,7 @@
         "renderedExports": [
           "Button",
           "ButtonRow",
+          "ErrorState",
           "Link",
           "LoadingSpinner",
           "Tag",

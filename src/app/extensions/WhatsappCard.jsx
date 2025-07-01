@@ -3,22 +3,15 @@ import { useState } from "react";
 import { useEffect } from "react";
 import {
 	hubspot,
-	Card,
-	Heading,
-	Text,
-	Flex,
-	Tag,
-	Box,
 	Button,
-	LoadingSpinner,
 	ButtonRow,
-	Dropdown,
-	Tile,
-	Modal,
-	ModalBody,
-	ModalFooter,
+	ErrorState,
+	Flex,
 	Link,
-	Divider,
+	LoadingSpinner,
+	Tag,
+	Text,
+	Tile,
 } from "@hubspot/ui-extensions";
 
 // Helper to build query string
@@ -70,13 +63,20 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 				mobilephone: contactProperties.mobilephone,
 			};
 
-			const url = `https://whatsapp-integration.transfunnel.io/api/crm-card.php?${buildQuery(params)}`;
+			const url = `https://whatsapp-integration.transfunnel.io/api/crm-card.php`;
 			try {
 				const response = await hubspot.fetch(url, {
 					timeout: 2_000,
-					method: "GET",
+					method: "POST",
+					body: params,
 				});
 				const data = await response.json();
+
+				if (data.status === "error") {
+					setData({ error: data.message });
+					return;
+				}
+
 				setData(data[params.portalId]);
 			} catch (err) {
 				console.error("Something went wrong", err);
@@ -90,6 +90,10 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 	const billing = data.billing;
 	const frames = data.frames;
 	const guides = data.guides;
+
+	if (data && data.error) {
+		return <ErrorState title="Something went wrong."></ErrorState>;
+	}
 
 	return (
 		<Flex direction={"column"} gap={"lg"}>
