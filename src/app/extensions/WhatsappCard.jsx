@@ -70,7 +70,7 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 				mobilephone: contactProperties.mobilephone,
 			};
 
-			const url = `https://whatsapp-integration.transfunnel.io/react/crm-card-react.php?${buildQuery(params)}`;
+			const url = `https://whatsapp-integration.transfunnel.io/api/crm-card.php?${buildQuery(params)}`;
 			try {
 				const response = await hubspot.fetch(url, {
 					timeout: 2_000,
