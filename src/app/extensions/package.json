@@ -1,9 +1,9 @@
 {
-  "name": "example-extension",
+  "name": "whatsapp-integration-extension",
   "version": "0.1.0",
-  "description": "",
+  "description": "Extension providing a WhatsApp CRM card for HubSpot sidebar.",
   "license": "MIT",
-  "main": "Example.jsx",
+  "main": "WhatsappCard.jsx",
   "scripts": {
     "dev": "hs-ui-extensions-dev-server dev",
     "build": "hs-ui-extensions-dev-server build"
@@ -15,5 +15,14 @@
   "dependencies": {
     "@hubspot/ui-extensions": "^0.9.2",
     "react": "^18.2.0"
-  }
+  },
+  "cards": [
+    {
+      "id": "whatsapp-card",
+      "title": "WhatsApp Integration",
+      "description": "A custom card for the right sidebar on contact records.",
+      "main": "WhatsappCard.jsx",
+      "previewImage": "assets/sidebar-card-preview.jpg"
+    }
+  ]
 }
