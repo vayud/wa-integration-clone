@@ -1,0 +1,21 @@
+{
+	"type": "crm-card",
+	"data": {
+		"title": "WhatsApp Trends",
+		"description": "A custom card for the middle column on contact records.",
+		"location": "crm.record.tab",
+		"uid": "whatsapp-trends-card",
+		"module": {
+			"file": "ContactTrends.jsx"
+		},
+		"objectTypes": [
+			{
+				"name": "contacts"
+			}
+		],
+		"previewImage": {
+			"file": "assets/linechart-preview.jpg",
+			"altText": "Preview of the Chart card."
+		}
+	}
+}

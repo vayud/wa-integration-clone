@@ -54,6 +54,9 @@
         },
         {
           "file": "./extensions/contact-stats.json"
+        },
+        {
+          "file": "./extensions/contact-trends.json"
         }
       ]
     }
