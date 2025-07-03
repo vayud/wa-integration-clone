@@ -43,8 +43,11 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 
 		const fetchData = async () => {
 			const params = {
+				userId: context.user.id,
+				userEmail: context.user.email,
 				associatedObjectId: context.crm.objectId,
 				associatedObjectType: context.crm.objectTypeId,
+				portalId: context.portal.id,
 				firstname: context.user.firstName,
 				lastname: context.user.lastName,
 				email: contactProperties.email,
