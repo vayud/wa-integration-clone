@@ -1,9 +1,9 @@
 {
-  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactStats.jsx",
+  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactTrends.jsx",
   "modules": {
     "internal": [
       {
-        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactStats.jsx",
+        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactTrends.jsx",
         "renderedExports": []
       }
     ],
@@ -22,10 +22,7 @@
         "renderedExports": [
           "ErrorState",
           "LoadingSpinner",
-          "Text",
-          "StatisticsItem",
-          "Statistics",
-          "StatisticsTrend"
+          "LineChart"
         ]
       },
       {
