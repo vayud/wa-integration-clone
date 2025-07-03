@@ -1,4 +1,3 @@
-import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import {
@@ -13,13 +12,6 @@ import {
 	Text,
 	Tile,
 } from "@hubspot/ui-extensions";
-
-// Helper to build query string
-const buildQuery = (params) =>
-	Object.entries(params)
-		.filter(([key, val]) => val != null && val !== "")
-		.map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
-		.join("&");
 
 // Mapping for billing status to Tag variant
 const STATUS_VARIANT_MAP = {
@@ -51,11 +43,8 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 
 		const fetchData = async () => {
 			const params = {
-				userId: context.user.id,
-				userEmail: context.user.email,
 				associatedObjectId: context.crm.objectId,
 				associatedObjectType: context.crm.objectTypeId,
-				portalId: context.portal.id,
 				firstname: context.user.firstName,
 				lastname: context.user.lastName,
 				email: contactProperties.email,
@@ -63,7 +52,6 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 				mobilephone: contactProperties.mobilephone,
 			};
 
-			// const url = `https://whatsapp-integration.transfunnel.io/api/crm-card.php?${buildQuery(params)}`;
 			const url = `https://whatsapp-integration.transfunnel.io/api/crm-card.php`;
 			try {
 				const response = await hubspot.fetch(url, {
