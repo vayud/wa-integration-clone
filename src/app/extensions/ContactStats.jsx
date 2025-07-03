@@ -23,6 +23,7 @@ const DynamicCard = ({ context }) => {
 	useEffect(() => {
 		const fetchData = async () => {
 			const params = {
+				action: "monthly-counts",
 				associatedObjectId: context.crm.objectId,
 			};
 
