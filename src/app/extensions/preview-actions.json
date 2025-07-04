@@ -1,7 +1,7 @@
 {
 	"type": "crm-card",
 	"data": {
-		"title": "WhatsApp Integration",
+		"title": "WhatsApp Integration Actions",
 		"description": "A custom card for contact record preview.",
 		"location": "crm.sidebar",
 		"uid": "whatsapp-preview-card",
