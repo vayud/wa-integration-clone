@@ -1,7 +1,7 @@
 {
   "name": "whatsapp-integration-extension",
   "version": "0.1.0",
-  "description": "Extension providing a WhatsApp CRM card for HubSpot sidebar.",
+  "description": "Extension providing WhatsApp CRM cards for HubSpot.",
   "license": "MIT",
   "main": "WhatsappCard.jsx",
   "scripts": {
@@ -30,6 +30,20 @@
       "description": "A custom card for the middle column on contact records.",
       "main": "ContactStats.jsx",
       "previewImage": "assets/stats-card-preview.png"
+    },
+    {
+      "id": "whatsapp-trends-card",
+      "title": "WhatsApp Trends",
+      "description": "A custom card for the middle column on contact records.",
+      "main": "ContactTrends.jsx",
+      "previewImage": "assets/trends-card-preview.jpg"
+    },
+    {
+      "id": "whatsapp-preview-card",
+      "title": "WhatsApp Integration Actions",
+      "description": "A custom card for contact record preview.",
+      "main": "PreviewActions.jsx",
+      "previewImage": "assets/contact-preview-card-preview.jpg"
     }
   ]
 }
