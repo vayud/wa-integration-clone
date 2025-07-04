@@ -3,7 +3,7 @@
 	"data": {
 		"title": "WhatsApp Integration Actions",
 		"description": "A custom card for contact record preview.",
-		"location": "crm.sidebar",
+		"location": "crm.preview",
 		"uid": "whatsapp-preview-card",
 		"module": {
 			"file": "PreviewActions.jsx"
