@@ -96,12 +96,12 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 						<Tag variant={STATUS_VARIANT_MAP[billing.status] || "default"}>{billing.status}</Tag>
 					</Flex>
 					<Flex gap="xs">
-						<Text format={{ fontWeight: "bold" }}>Billing Period:</Text>
-						<Text>{billing.period}</Text>
+						<Text format={{ fontWeight: "bold" }}>Plan:</Text>
+						<Tag variant={billing.plan == "Starter" ? "default" : "info"}> {billing.plan} </Tag>
 					</Flex>
 					<Flex gap="xs">
-						<Text format={{ fontWeight: "bold" }}>Amount:</Text>
-						<Text>${billing.amount}</Text>
+						<Text format={{ fontWeight: "bold" }}>Billing Period:</Text>
+						<Text>{billing.period}</Text>
 					</Flex>
 				</Tile>
 
