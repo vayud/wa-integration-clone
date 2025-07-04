@@ -1,0 +1,21 @@
+{
+	"type": "crm-card",
+	"data": {
+		"title": "WhatsApp Integration",
+		"description": "A custom card for contact record preview.",
+		"location": "crm.sidebar",
+		"uid": "whatsapp-preview-card",
+		"module": {
+			"file": "PreviewActions.jsx"
+		},
+		"objectTypes": [
+			{
+				"name": "contacts"
+			}
+		],
+		"previewImage": {
+			"file": "assets/contact-preview-card-preview.jpg",
+			"altText": "Preview of the Preview panel card."
+		}
+	}
+}

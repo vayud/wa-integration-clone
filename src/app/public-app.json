@@ -53,6 +53,9 @@
           "file": "./extensions/whatsapp-card.json"
         },
         {
+          "file": "./extensions/preview-actions.json"
+        },
+        {
           "file": "./extensions/contact-stats.json"
         },
         {
