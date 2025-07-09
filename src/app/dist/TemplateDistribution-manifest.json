@@ -1,9 +1,9 @@
 {
-  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactTrends.jsx",
+  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/TemplateDistribution.jsx",
   "modules": {
     "internal": [
       {
-        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactTrends.jsx",
+        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/TemplateDistribution.jsx",
         "renderedExports": []
       }
     ],
@@ -24,7 +24,8 @@
           "ErrorState",
           "LoadingSpinner",
           "Text",
-          "LineChart"
+          "Flex",
+          "BarChart"
         ]
       },
       {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { hubspot, EmptyState, ErrorState, LoadingSpinner, LineChart, Text } from "@hubspot/ui-extensions";
+import { hubspot, EmptyState, ErrorState, LoadingSpinner, BarChart, Text, Flex } from "@hubspot/ui-extensions";
 
 // Helper to build query string
 const buildQuery = (params) =>
@@ -8,13 +8,13 @@ const buildQuery = (params) =>
 		.map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
 		.join("&");
 
-const TrendsCard = ({ context }) => {
+const DistributionCard = ({ context }) => {
 	const [data, setData] = useState(null);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			const params = {
-				action: "monthly-trends",
+				action: "template-types",
 				associatedObjectId: context.crm.objectId,
 			};
 
@@ -25,7 +25,6 @@ const TrendsCard = ({ context }) => {
 					method: "GET",
 				});
 				const data = await response.json();
-				console.log(data);
 
 				if (data.status === "error") {
 					setData({ error: data.message });
@@ -38,10 +37,10 @@ const TrendsCard = ({ context }) => {
 				}
 
 				if (data.status === "success") {
-					if (data && data.trends) {
-						setData(data.trends);
+					if (data && data.distribution) {
+						setData(data.distribution);
 					} else {
-						setData({ error: "Trends data not found in response" });
+						setData({ error: "Distribution data not found in response" });
 					}
 				}
 			} catch (err) {
@@ -65,33 +64,41 @@ const TrendsCard = ({ context }) => {
 		);
 	}
 
-	const chartData = [];
-	data.forEach((row) => {
-		chartData.push(
-			{ Month: row.month, Metric: "Sent", Count: row.sent },
-			{ Month: row.month, Metric: "Failed", Count: row.failed },
-			{ Month: row.month, Metric: "Received", Count: row.received }
-		);
-	});
+	const chartData = Object.entries(data).map(([type, count]) => ({ type, count }));
 
 	return (
-		<LineChart
-			data={chartData}
-			axes={{
-				x: { field: "Month", fieldType: "category" },
-				y: { field: "Count", fieldType: "linear" },
-				options: {
-					groupFieldByColor: "Metric",
-					// stacking: true,
-				},
-			}}
-			options={{
-				showLegend: true,
-				showDataLabels: true,
-				colorList: ["darkGreen", "darkOrange", "darkBlue"],
-			}}
-		/>
+		<>
+			<BarChart
+				data={chartData}
+				axes={{
+					x: { field: "type", fieldType: "category", label: "Template Type" },
+					y: { field: "count", fieldType: "linear", label: "Message Count" },
+					options: {
+						groupFieldByColor: "type",
+						colors: {
+							"Call to action": "darkBlue",
+							Card: "purple",
+							Carousel: "orange",
+							Media: "darkGreen",
+							"Quick reply": "darkOrange",
+							Text: "aqua",
+						},
+					},
+				}}
+				options={{
+					showLegend: true,
+					showDataLabels: true,
+					// colorList: ["darkBlue", "purple", "orange", "darkGreen", "darkOrange", "aqua"],
+				}}
+			/>
+			<Flex direction="column" align="center">
+				<Text variant="microcopy">
+					The chart displays the distribution of WhatsApp message templates sent to this contact, grouped by template.
+					type.
+				</Text>
+			</Flex>
+		</>
 	);
 };
 
-hubspot.extend(({ context }) => <TrendsCard context={context} />);
+hubspot.extend(({ context }) => <DistributionCard context={context} />);

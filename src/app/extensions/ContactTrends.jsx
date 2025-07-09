@@ -25,7 +25,6 @@ const TrendsCard = ({ context }) => {
 					method: "GET",
 				});
 				const data = await response.json();
-				console.log(data);
 
 				if (data.status === "error") {
 					setData({ error: data.message });
@@ -75,22 +74,30 @@ const TrendsCard = ({ context }) => {
 	});
 
 	return (
-		<LineChart
-			data={chartData}
-			axes={{
-				x: { field: "Month", fieldType: "category" },
-				y: { field: "Count", fieldType: "linear" },
-				options: {
-					groupFieldByColor: "Metric",
-					// stacking: true,
-				},
-			}}
-			options={{
-				showLegend: true,
-				showDataLabels: true,
-				colorList: ["darkGreen", "darkOrange", "darkBlue"],
-			}}
-		/>
+		<>
+			<LineChart
+				data={chartData}
+				axes={{
+					x: { field: "Month", fieldType: "category" },
+					y: { field: "Count", fieldType: "linear" },
+					options: {
+						groupFieldByColor: "Metric",
+						// stacking: true,
+					},
+				}}
+				options={{
+					showLegend: true,
+					showDataLabels: true,
+					colorList: ["darkGreen", "darkOrange", "darkBlue"],
+				}}
+			/>
+			<Flex direction="column" align="center">
+				<Text variant="microcopy">
+					The chart displays a monthly breakdown of WhatsApp messages for this contact, covering up to the last 12
+					months, grouped by their statuses: sent, failed, and received.
+				</Text>
+			</Flex>
+		</>
 	);
 };
 
