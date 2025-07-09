@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { hubspot, EmptyState, ErrorState, LoadingSpinner, LineChart, Text } from "@hubspot/ui-extensions";
+import { hubspot, EmptyState, ErrorState, Flex, LineChart, LoadingSpinner, Text } from "@hubspot/ui-extensions";
 
 // Helper to build query string
 const buildQuery = (params) =>
@@ -93,8 +93,7 @@ const TrendsCard = ({ context }) => {
 			/>
 			<Flex direction="column" align="center">
 				<Text variant="microcopy">
-					The chart displays a monthly breakdown of WhatsApp messages for this contact, covering up to the last 12
-					months, grouped by their statuses: sent, failed, and received.
+					The chart displays a monthly breakdown of WhatsApp messages for this contact, covering up to the last 12 months.
 				</Text>
 			</Flex>
 		</>

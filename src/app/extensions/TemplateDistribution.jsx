@@ -72,7 +72,7 @@ const DistributionCard = ({ context }) => {
 				data={chartData}
 				axes={{
 					x: { field: "type", fieldType: "category", label: "Template Type" },
-					y: { field: "count", fieldType: "linear", label: "Message Count" },
+					y: { field: "count", fieldType: "linear", label: "Count" },
 					options: {
 						groupFieldByColor: "type",
 						colors: {
