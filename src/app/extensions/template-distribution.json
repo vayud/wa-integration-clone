@@ -1,0 +1,21 @@
+{
+	"type": "crm-card",
+	"data": {
+		"title": "WhatsApp Template Distribution",
+		"description": "A custom card for the middle column on contact records.",
+		"location": "crm.record.tab",
+		"uid": "whatsapp-template-distribution-card",
+		"module": {
+			"file": "TemplateDistribution.jsx"
+		},
+		"objectTypes": [
+			{
+				"name": "contacts"
+			}
+		],
+		"previewImage": {
+			"file": "assets/trends-card-preview.jpg",
+			"altText": "Preview of the Chart card."
+		}
+	}
+}

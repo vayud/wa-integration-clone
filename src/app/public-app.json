@@ -60,6 +60,9 @@
         },
         {
           "file": "./extensions/contact-trends.json"
+        },
+        {
+          "file": "./extensions/template-distribution.json"
         }
       ]
     }
