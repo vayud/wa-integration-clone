@@ -1,9 +1,9 @@
 {
-  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/WhatsappCard.jsx",
+  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactStats.jsx",
   "modules": {
     "internal": [
       {
-        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/WhatsappCard.jsx",
+        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactStats.jsx",
         "renderedExports": []
       }
     ],
@@ -20,15 +20,12 @@
       {
         "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/node_modules/@hubspot/ui-extensions/dist/coreComponents.js",
         "renderedExports": [
-          "Button",
-          "ButtonRow",
           "ErrorState",
-          "Link",
           "LoadingSpinner",
-          "Tag",
           "Text",
-          "Tile",
-          "Flex"
+          "StatisticsItem",
+          "Statistics",
+          "StatisticsTrend"
         ]
       },
       {

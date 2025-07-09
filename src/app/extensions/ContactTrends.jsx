@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useEffect } from "react";
-import { hubspot, ErrorState, LoadingSpinner, LineChart } from "@hubspot/ui-extensions";
+import { hubspot, EmptyState, ErrorState, LoadingSpinner, LineChart } from "@hubspot/ui-extensions";
 
 // Helper to build query string
 const buildQuery = (params) =>
@@ -33,6 +33,11 @@ const TrendsCard = ({ context }) => {
 					return;
 				}
 
+				if (data.status === "empty") {
+					setData({ empty: true, message: data.message });
+					return;
+				}
+
 				if (data.status === "success") {
 					if (data && data.trends) {
 						setData(data.trends);
@@ -51,6 +56,14 @@ const TrendsCard = ({ context }) => {
 
 	if (data && data.error) {
 		return <ErrorState title="Something went wrong."></ErrorState>;
+	}
+
+	if (data && data.empty) {
+		return (
+			<EmptyState title="Nothing here yet" layout="vertical" reverseOrder={true}>
+				<Text>{data.message}</Text>
+			</EmptyState>
+		);
 	}
 
 	const chartData = [];
