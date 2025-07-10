@@ -87,14 +87,12 @@ const DistributionCard = ({ context }) => {
 				}}
 				options={{
 					showLegend: true,
-					showDataLabels: true,
-					// colorList: ["darkBlue", "purple", "orange", "darkGreen", "darkOrange", "aqua"],
+					showDataLabels: true
 				}}
 			/>
 			<Flex direction="column" align="center">
 				<Text variant="microcopy">
-					The chart displays the distribution of WhatsApp message templates sent to this contact, grouped by template.
-					type.
+					The chart displays the distribution of WhatsApp message templates sent to this contact, grouped by template type.
 				</Text>
 			</Flex>
 		</>
