@@ -1,10 +1,30 @@
 {
-  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactTrends.jsx",
+  "entry": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/WhatsappTabCard.jsx",
   "modules": {
     "internal": [
       {
-        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/ContactTrends.jsx",
-        "renderedExports": []
+        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/StatsTab.jsx",
+        "renderedExports": [
+          "default"
+        ]
+      },
+      {
+        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/TrendsTab.jsx",
+        "renderedExports": [
+          "default"
+        ]
+      },
+      {
+        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/DistributionTab.jsx",
+        "renderedExports": [
+          "default"
+        ]
+      },
+      {
+        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/WhatsappTabCard.jsx",
+        "renderedExports": [
+          "default"
+        ]
       }
     ],
     "external": [
@@ -24,8 +44,14 @@
           "ErrorState",
           "LoadingSpinner",
           "Text",
+          "StatisticsItem",
+          "Statistics",
+          "StatisticsTrend",
           "Flex",
-          "LineChart"
+          "BarChart",
+          "LineChart",
+          "Tabs",
+          "Tab"
         ]
       },
       {

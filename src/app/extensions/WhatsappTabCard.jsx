@@ -20,6 +20,12 @@ const CombinedCard = ({ context }) => {
 			.join("&");
 
 	const fetchTabData = async (key, action) => {
+		const responseKeyMap = {
+			stats: "stats",
+			trends: "trends",
+			distribution: "distribution",
+		};
+
 		setTabData((prev) => ({
 			...prev,
 			[key]: { loading: true, data: null, error: null },
@@ -32,8 +38,11 @@ const CombinedCard = ({ context }) => {
 			})}`;
 			const res = await hubspot.fetch(url, { timeout: 2000 });
 			const json = await res.json();
+			console.log("API response:", json);
 
-			if (json.status === "error" || !json[key]) {
+			const resKey = responseKeyMap[key];
+
+			if (json.status === "error" || !json[resKey]) {
 				setTabData((prev) => ({
 					...prev,
 					[key]: { loading: false, data: null, error: json.message || "Invalid data" },
@@ -46,7 +55,7 @@ const CombinedCard = ({ context }) => {
 			} else {
 				setTabData((prev) => ({
 					...prev,
-					[key]: { loading: false, data: json[key], error: null },
+					[key]: { loading: false, data: json[resKey], error: null },
 				}));
 			}
 		} catch (err) {
@@ -78,6 +87,10 @@ const CombinedCard = ({ context }) => {
 
 	const renderTabContent = (key, Component) => {
 		const { loading, data, error } = tabData[key];
+
+		// Only render if this tab is selected OR already has data
+		if (selectedTab !== key && !data && !loading && !error) return null;
+
 		if (loading) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
 		if (error) return <ErrorState title="Error" message={error} />;
 		if (data === "empty")
@@ -86,22 +99,40 @@ const CombinedCard = ({ context }) => {
 					<Text>{error}</Text>
 				</EmptyState>
 			);
+
+		console.log("renderTabContent", key, { loading, data, error });
+
 		return <Component data={data} />;
 	};
 
 	return (
-		<Tabs defaultSelected="stats" selected={selectedTab} onSelectedChange={handleTabChange} variant="default">
-			<Tab tabId="stats" title="Stats" tooltip="Monthly WhatsApp message stats">
-				{renderTabContent("stats", StatsTab)}
-			</Tab>
-			<Tab tabId="trends" title="Trends" tooltip="Message trend over time">
-				{renderTabContent("trends", TrendsTab)}
-			</Tab>
-			<Tab tabId="distribution" title="Distribution" tooltip="Message type distribution">
-				{renderTabContent("distribution", DistributionTab)}
-			</Tab>
-		</Tabs>
+		<>
+			<Tabs defaultSelected="stats" onSelectedChange={handleTabChange}>
+				<Tab tabId="stats" title="Stats" />
+				<Tab tabId="trends" title="Trends" />
+				<Tab tabId="distribution" title="Distribution" />
+			</Tabs>
+
+			{/* ACTUALLY RENDER the selected tab content */}
+			{selectedTab === "stats" && renderTabContent("stats", StatsTab)}
+			{selectedTab === "trends" && renderTabContent("trends", TrendsTab)}
+			{selectedTab === "distribution" && renderTabContent("distribution", DistributionTab)}
+		</>
 	);
+
+	// return (
+	// 	<Tabs defaultSelected="stats" onSelectedChange={handleTabChange} variant="default">
+	// 		<Tab tabId="stats" title="Stats">
+	// 			{selectedTab === "stats" && renderTabContent("stats", StatsTab)}
+	// 		</Tab>
+	// 		<Tab tabId="trends" title="Trends">
+	// 			{selectedTab === "trends" && renderTabContent("trends", TrendsTab)}
+	// 		</Tab>
+	// 		<Tab tabId="distribution" title="Distribution">
+	// 			{selectedTab === "distribution" && renderTabContent("distribution", DistributionTab)}
+	// 		</Tab>
+	// 	</Tabs>
+	// );
 };
 
 hubspot.extend(({ context }) => <CombinedCard context={context} />);

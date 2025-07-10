@@ -1,7 +1,17 @@
-import { LineChart, Text, Flex } from "@hubspot/ui-extensions";
+import { LineChart, Text, Flex, EmptyState, ErrorState, LoadingSpinner } from "@hubspot/ui-extensions";
 
 const TrendsTab = ({ data }) => {
-	const chartData = data?.flatMap((row) => [
+	console.log("trends data: ", data);
+	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
+	if (data.error) return <ErrorState title="Something went wrong." message={data.error} />;
+	if (data.empty)
+		return (
+			<EmptyState title="Nothing here yet" layout="vertical" reverseOrder={true}>
+				<Text>{data.message}</Text>
+			</EmptyState>
+		);
+
+	const chartData = data.flatMap((row) => [
 		{ Month: row.month, Metric: "Sent", Count: row.sent },
 		{ Month: row.month, Metric: "Failed", Count: row.failed },
 		{ Month: row.month, Metric: "Received", Count: row.received },

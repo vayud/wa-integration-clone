@@ -1,6 +1,17 @@
-import { BarChart, Text, Flex } from "@hubspot/ui-extensions";
+import { BarChart, Text, Flex, EmptyState, ErrorState, LoadingSpinner } from "@hubspot/ui-extensions";
 
 const DistributionTab = ({ data }) => {
+	console.log("distribution data: ", data);
+
+	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
+	if (data.error) return <ErrorState title="Something went wrong." message={data.error} />;
+	if (data.empty)
+		return (
+			<EmptyState title="Nothing here yet" layout="vertical" reverseOrder={true}>
+				<Text>{data.message}</Text>
+			</EmptyState>
+		);
+
 	const chartData = Object.entries(data).map(([type, count]) => ({ type, count }));
 
 	return (
