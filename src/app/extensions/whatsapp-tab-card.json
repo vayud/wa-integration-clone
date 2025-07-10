@@ -1,0 +1,21 @@
+{
+	"type": "crm-card",
+	"data": {
+		"title": "WhatsApp Integration Stats",
+		"description": "A custom card for the middle column on contact records.",
+		"location": "crm.record.tab",
+		"uid": "whatsapp-tab-card",
+		"module": {
+			"file": "WhatsappTabCard.jsx"
+		},
+		"objectTypes": [
+			{
+				"name": "contacts"
+			}
+		],
+		"previewImage": {
+			"file": "assets/whatsapp-tab-preview.jpg",
+			"altText": "Preview of the Tabbed card."
+		}
+	}
+}
