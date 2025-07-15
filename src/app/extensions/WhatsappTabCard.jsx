@@ -108,9 +108,9 @@ const CombinedCard = ({ context }) => {
 	return (
 		<>
 			<Tabs defaultSelected="stats" onSelectedChange={handleTabChange}>
-				<Tab tabId="stats" title="Message Stats" />
-				<Tab tabId="trends" title="Message Trends" />
-				<Tab tabId="distribution" title="Template Distribution" />
+				<Tab tabId="stats" title="Message Stats" tooltip="View message statistics for this contact" tooltipPlacement="bottom" />
+				<Tab tabId="trends" title="Message Trends" tooltip="View monthly message trends for this contact" tooltipPlacement="bottom" />
+				<Tab tabId="distribution" title="Template Distribution" tooltip="View template distribution for this contact" tooltipPlacement="bottom" />
 			</Tabs>
 
 			{/* ACTUALLY RENDER the selected tab content */}
@@ -119,20 +119,6 @@ const CombinedCard = ({ context }) => {
 			{selectedTab === "distribution" && renderTabContent("distribution", DistributionTab)}
 		</>
 	);
-
-	// return (
-	// 	<Tabs defaultSelected="stats" onSelectedChange={handleTabChange} variant="default">
-	// 		<Tab tabId="stats" title="Stats">
-	// 			{selectedTab === "stats" && renderTabContent("stats", StatsTab)}
-	// 		</Tab>
-	// 		<Tab tabId="trends" title="Trends">
-	// 			{selectedTab === "trends" && renderTabContent("trends", TrendsTab)}
-	// 		</Tab>
-	// 		<Tab tabId="distribution" title="Distribution">
-	// 			{selectedTab === "distribution" && renderTabContent("distribution", DistributionTab)}
-	// 		</Tab>
-	// 	</Tabs>
-	// );
 };
 
 hubspot.extend(({ context }) => <CombinedCard context={context} />);
