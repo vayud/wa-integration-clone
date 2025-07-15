@@ -15,6 +15,12 @@
         ]
       },
       {
+        "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/RecentMessages.jsx",
+        "renderedExports": [
+          "default"
+        ]
+      },
+      {
         "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/DistributionTab.jsx",
         "renderedExports": [
           "default"
@@ -40,13 +46,19 @@
       {
         "module": "C:/xampp/htdocs/projects/hs-marketplace/wa-integration-clone/src/app/extensions/node_modules/@hubspot/ui-extensions/dist/coreComponents.js",
         "renderedExports": [
+          "DescriptionList",
+          "DescriptionListItem",
+          "Divider",
           "EmptyState",
           "ErrorState",
+          "Image",
           "LoadingSpinner",
+          "Tag",
           "Text",
           "StatisticsItem",
           "Statistics",
           "StatisticsTrend",
+          "Accordion",
           "Flex",
           "BarChart",
           "LineChart",

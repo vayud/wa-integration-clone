@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { hubspot, Tabs, Tab, LoadingSpinner, ErrorState, EmptyState, Text } from "@hubspot/ui-extensions";
 import StatsTab from "./StatsTab";
 import TrendsTab from "./TrendsTab";
+import MessagesTab from "./RecentMessages";
 import DistributionTab from "./DistributionTab";
 
 const CombinedCard = ({ context }) => {
@@ -11,6 +12,7 @@ const CombinedCard = ({ context }) => {
 		stats: { loading: true, data: null, error: null },
 		trends: { loading: false, data: null, error: null },
 		distribution: { loading: false, data: null, error: null },
+		messages: { loading: false, data: null, error: null },
 	});
 
 	const buildQuery = (params) =>
@@ -24,6 +26,7 @@ const CombinedCard = ({ context }) => {
 			stats: "stats",
 			trends: "trends",
 			distribution: "distribution",
+			messages: "messages",
 		};
 
 		setTabData((prev) => ({
@@ -38,7 +41,6 @@ const CombinedCard = ({ context }) => {
 			})}`;
 			const res = await hubspot.fetch(url, { timeout: 2000 });
 			const json = await res.json();
-			console.log("API response:", json);
 
 			const resKey = responseKeyMap[key];
 
@@ -78,6 +80,7 @@ const CombinedCard = ({ context }) => {
 			stats: "monthly-counts",
 			trends: "monthly-trends",
 			distribution: "template-types",
+			messages: "recent-messages",
 		};
 
 		if (!tabData[tabId].data && !tabData[tabId].loading) {
@@ -100,20 +103,22 @@ const CombinedCard = ({ context }) => {
 				</EmptyState>
 			);
 
-		console.log("renderTabContent", key, { loading, data, error });
+		// console.log("renderTabContent", key, { loading, data, error });
 
 		return <Component data={data} />;
 	};
 
 	return (
 		<>
-			<Tabs defaultSelected="stats" onSelectedChange={handleTabChange}>
+			<Tabs defaultSelected="messages" onSelectedChange={handleTabChange}>
+				<Tab tabId="messages" title="Recent Messages" tooltip="View the last 5 messages sent/received for this contact" tooltipPlacement="bottom" />
 				<Tab tabId="stats" title="Message Stats" tooltip="View message statistics for this contact" tooltipPlacement="bottom" />
 				<Tab tabId="trends" title="Message Trends" tooltip="View monthly message trends for this contact" tooltipPlacement="bottom" />
 				<Tab tabId="distribution" title="Template Distribution" tooltip="View template distribution for this contact" tooltipPlacement="bottom" />
 			</Tabs>
 
 			{/* ACTUALLY RENDER the selected tab content */}
+			{selectedTab === "messages" && renderTabContent("messages", MessagesTab)}
 			{selectedTab === "stats" && renderTabContent("stats", StatsTab)}
 			{selectedTab === "trends" && renderTabContent("trends", TrendsTab)}
 			{selectedTab === "distribution" && renderTabContent("distribution", DistributionTab)}

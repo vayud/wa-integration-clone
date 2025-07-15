@@ -9,8 +9,6 @@ import {
 } from "@hubspot/ui-extensions";
 
 const StatsTab = ({ data }) => {
-	console.log("stats data: ", data);
-
 	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
 	if (data.error) return <ErrorState title="Something went wrong." message={data.error} />;
 	if (data.empty)
