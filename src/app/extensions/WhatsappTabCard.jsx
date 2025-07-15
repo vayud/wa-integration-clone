@@ -108,9 +108,9 @@ const CombinedCard = ({ context }) => {
 	return (
 		<>
 			<Tabs defaultSelected="stats" onSelectedChange={handleTabChange}>
-				<Tab tabId="stats" title="Stats" />
-				<Tab tabId="trends" title="Trends" />
-				<Tab tabId="distribution" title="Distribution" />
+				<Tab tabId="stats" title="Message Stats" />
+				<Tab tabId="trends" title="Message Trends" />
+				<Tab tabId="distribution" title="Template Distribution" />
 			</Tabs>
 
 			{/* ACTUALLY RENDER the selected tab content */}
