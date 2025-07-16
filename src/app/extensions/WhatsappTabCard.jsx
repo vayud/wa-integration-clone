@@ -112,9 +112,9 @@ const CombinedCard = ({ context }) => {
 		<>
 			<Tabs defaultSelected="messages" onSelectedChange={handleTabChange}>
 				<Tab tabId="messages" title="Recent Messages" tooltip="View the last 5 messages sent/received for this contact" tooltipPlacement="bottom" />
-				<Tab tabId="stats" title="Message Stats" tooltip="View message statistics for this contact" tooltipPlacement="bottom" />
-				<Tab tabId="trends" title="Message Trends" tooltip="View monthly message trends for this contact" tooltipPlacement="bottom" />
-				<Tab tabId="distribution" title="Template Distribution" tooltip="View template distribution for this contact" tooltipPlacement="bottom" />
+				<Tab tabId="stats" title="Stats" tooltip="View message statistics for this contact" tooltipPlacement="bottom" />
+				<Tab tabId="trends" title="Trends" tooltip="View monthly message trends for this contact" tooltipPlacement="bottom" />
+				<Tab tabId="distribution" title="Template Usage" tooltip="View template usage distribution for this contact" tooltipPlacement="bottom" />
 			</Tabs>
 
 			{/* ACTUALLY RENDER the selected tab content */}
