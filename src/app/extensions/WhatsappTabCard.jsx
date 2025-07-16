@@ -6,10 +6,10 @@ import MessagesTab from "./RecentMessages";
 import DistributionTab from "./DistributionTab";
 
 const CombinedCard = ({ context }) => {
-	const [selectedTab, setSelectedTab] = useState("stats");
+	const [selectedTab, setSelectedTab] = useState("messages");
 
 	const [tabData, setTabData] = useState({
-		stats: { loading: true, data: null, error: null },
+		stats: { loading: false, data: null, error: null },
 		trends: { loading: false, data: null, error: null },
 		distribution: { loading: false, data: null, error: null },
 		messages: { loading: false, data: null, error: null },
@@ -70,7 +70,7 @@ const CombinedCard = ({ context }) => {
 
 	// Fetch initial tab on mount
 	useEffect(() => {
-		fetchTabData("stats", "monthly-counts");
+		fetchTabData("messages", "recent-messages");
 	}, []);
 
 	const handleTabChange = (tabId) => {
