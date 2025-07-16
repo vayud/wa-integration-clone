@@ -24,9 +24,10 @@ const STATUS_VARIANT_MAP = {
 };
 
 const MessagesTab = ({ data }) => {
-	console.log("messages data: ", data);
 	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
+
 	if (data.error) return <ErrorState title="Something went wrong." message={data.error} />;
+
 	if (data.empty)
 		return (
 			<EmptyState title="No messages yet" layout="vertical" reverseOrder={true}>
@@ -41,8 +42,13 @@ const MessagesTab = ({ data }) => {
 					message.action === "sent" ? `Message Sent | ${message.timestamp}` : `Message Received | ${message.timestamp}`;
 				return (
 					<Accordion title={itemTitle}>
-						<Text> {message.message} </Text>
-						{message.type == "image" && message.media_url && <Image alt="Image" src={message.media_url} />}
+						<Flex direction="column" gap="sm" justify="center" align="center">
+							{/* <Text> {message.message} </Text> */}
+							<Flex wrap="wrap" gap="xs" align="baseline">
+								{formatMessageComponents(message.message)}
+							</Flex>
+							{message.media_type == "image" && message.media_url && <Image alt="Image" src={message.media_url} />}
+						</Flex>
 						{message.action === "sent" && (
 							<>
 								<Divider />
@@ -69,3 +75,43 @@ const MessagesTab = ({ data }) => {
 };
 
 export default MessagesTab;
+
+const formatMessageComponents = (input) => {
+	if (!input) return <Text />;
+
+	const regex = /```.*?```|`.*?`|(?<!\w)([*_~])(.+?)\1(?!\w)|> .+|([^*_~`>]+)/gms;
+	const children = [];
+
+	let match;
+	let keyCounter = 0;
+
+	while ((match = regex.exec(input)) !== null) {
+		const [fullMatch, symbol, content, plain] = match;
+
+		// Skip unsupported formats
+		if (fullMatch.startsWith("```") || fullMatch.startsWith("`") || fullMatch.startsWith(">")) {
+			continue;
+		}
+
+		if (symbol && content) {
+			let format = {};
+			if (symbol === "*") format = { fontWeight: "bold" };
+			else if (symbol === "_") format = { italic: true };
+			else if (symbol === "~") format = { lineDecoration: "strikethrough" };
+
+			children.push(
+				<Text key={`f-${keyCounter++}`} inline={true} format={format}>
+					{content}
+				</Text>
+			);
+		} else if (plain) {
+			children.push(
+				<Text key={`p-${keyCounter++}`} inline={true}>
+					{plain}
+				</Text>
+			);
+		}
+	}
+
+	return <Text>{children}</Text>;
+};
