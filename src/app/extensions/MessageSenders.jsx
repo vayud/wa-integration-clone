@@ -1,6 +1,6 @@
 import { BarChart, Text, Flex, EmptyState, ErrorState, LoadingSpinner } from "@hubspot/ui-extensions";
 
-const DistributionTab = ({ data }) => {
+const SendersTab = ({ data }) => {
 	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
 	if (data.error) return <ErrorState title="Something went wrong." message={data.error} />;
 	if (data.empty)
@@ -10,25 +10,15 @@ const DistributionTab = ({ data }) => {
 			</EmptyState>
 		);
 
-	const chartData = Object.entries(data).map(([type, count]) => ({ type, count }));
-
 	return (
 		<>
 			<BarChart
-				data={chartData}
+				data={data}
 				axes={{
-					x: { field: "type", fieldType: "category", label: "Template Type" },
-					y: { field: "count", fieldType: "linear", label: "Count" },
+					x: { field: "userEmail", fieldType: "category", label: "Sender" },
+					y: { field: "count", fieldType: "linear", label: "Messages Sent" },
 					options: {
-						groupFieldByColor: "type",
-						colors: {
-							"Call to action": "darkBlue",
-							Card: "purple",
-							Carousel: "orange",
-							Media: "darkGreen",
-							"Quick reply": "darkOrange",
-							Text: "aqua",
-						},
+						groupFieldByColor: "userEmail",
 					},
 				}}
 				options={{
@@ -38,12 +28,11 @@ const DistributionTab = ({ data }) => {
 			/>
 			<Flex direction="column" align="center">
 				<Text variant="microcopy">
-					The chart displays the distribution of WhatsApp message templates sent to this contact, grouped by template
-					type.
+					The chart displays the number of messages sent to this contact, grouped by the sender (user or workflow).
 				</Text>
 			</Flex>
 		</>
 	);
 };
 
-export default DistributionTab;
+export default SendersTab;
