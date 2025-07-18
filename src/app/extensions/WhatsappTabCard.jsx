@@ -1,135 +1,161 @@
 import { useState, useEffect } from "react";
-import { hubspot, Tabs, Tab, LoadingSpinner, ErrorState, EmptyState, Text } from "@hubspot/ui-extensions";
+import {
+  hubspot,
+  Tabs,
+  Tab,
+  LoadingSpinner,
+  ErrorState,
+  EmptyState,
+  Text,
+} from "@hubspot/ui-extensions";
 import MessagesTab from "./RecentMessages";
 import SendersTab from "./MessageSenders";
 import StatsTab from "./StatsTab";
 import TrendsTab from "./TrendsTab";
 import DistributionTab from "./DistributionTab";
 
+const TABS_CONFIG = [
+  {
+    id: "messages",
+    title: "Recent Messages",
+    tooltip: "View the last 5 messages sent/received for this contact",
+    action: "recent-messages",
+    responseKey: "messages",
+    Component: MessagesTab,
+  },
+  {
+    id: "senders",
+    title: "Message Senders",
+    tooltip: "View a breakdown of messages sent by user or workflow.",
+    action: "message-senders",
+    responseKey: "senders",
+    Component: SendersTab,
+  },
+  {
+    id: "stats",
+    title: "Stats",
+    tooltip: "View message statistics for this contact",
+    action: "monthly-counts",
+    responseKey: "stats",
+    Component: StatsTab,
+  },
+  {
+    id: "trends",
+    title: "Trends",
+    tooltip: "View monthly message trends for this contact",
+    action: "monthly-trends",
+    responseKey: "trends",
+    Component: TrendsTab,
+  },
+  {
+    id: "distribution",
+    title: "Template Usage",
+    tooltip: "View template usage distribution for this contact",
+    action: "template-types",
+    responseKey: "distribution",
+    Component: DistributionTab,
+  },
+];
+
+const initialTabData = Object.fromEntries(
+  TABS_CONFIG.map(tab => [tab.id, { loading: false, data: null, error: null }])
+);
+
+const buildQuery = (params) =>
+  Object.entries(params)
+    .filter(([_, val]) => val != null && val !== "")
+    .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
+    .join("&");
+
 const CombinedCard = ({ context }) => {
-	const [selectedTab, setSelectedTab] = useState("messages");
+  const [selectedTab, setSelectedTab] = useState(TABS_CONFIG[0].id);
+  const [tabData, setTabData] = useState(initialTabData);
 
-	const [tabData, setTabData] = useState({
-		messages: { loading: false, data: null, error: null },
-		senders: { loading: false, data: null, error: null },
-		stats: { loading: false, data: null, error: null },
-		trends: { loading: false, data: null, error: null },
-		distribution: { loading: false, data: null, error: null },
-	});
+  const fetchTabData = async (key) => {
+    const tabConf = TABS_CONFIG.find(tab => tab.id === key);
+    if (!tabConf) return;
+    setTabData(prev => ({
+      ...prev,
+      [key]: { loading: true, data: null, error: null },
+    }));
 
-	const buildQuery = (params) =>
-		Object.entries(params)
-			.filter(([_, val]) => val != null && val !== "")
-			.map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
-			.join("&");
+    try {
+      const url = `https://whatsapp-integration.transfunnel.io/api/contact-stats.php?${buildQuery({
+        action: tabConf.action,
+        associatedObjectId: context.crm.objectId,
+      })}`;
+      const res = await hubspot.fetch(url, { timeout: 2000 });
+      const json = await res.json();
+      if (json.status === "error" || !json[tabConf.responseKey]) {
+        setTabData(prev => ({
+          ...prev,
+          [key]: { loading: false, data: null, error: json.message || "Invalid data" },
+        }));
+      } else if (json.status === "empty") {
+        setTabData(prev => ({
+          ...prev,
+          [key]: { loading: false, data: "empty", error: json.message },
+        }));
+      } else {
+        setTabData(prev => ({
+          ...prev,
+          [key]: { loading: false, data: json[tabConf.responseKey], error: null },
+        }));
+      }
+    } catch (err) {
+      setTabData(prev => ({
+        ...prev,
+        [key]: { loading: false, data: null, error: "Fetch failed" },
+      }));
+    }
+  };
 
-	const fetchTabData = async (key, action) => {
-		const responseKeyMap = {
-			messages: "messages",
-			senders: "senders",
-			stats: "stats",
-			trends: "trends",
-			distribution: "distribution",
-		};
+  // On mount or on context change, fetch default tab
+  useEffect(() => {
+    fetchTabData(TABS_CONFIG[0].id);
+    setSelectedTab(TABS_CONFIG[0].id);
+  }, [context.crm.objectId]);
 
-		setTabData((prev) => ({
-			...prev,
-			[key]: { loading: true, data: null, error: null },
-		}));
+  const handleTabChange = (tabId) => {
+    setSelectedTab(tabId);
+    if (!tabData[tabId].data && !tabData[tabId].loading) {
+      fetchTabData(tabId);
+    }
+  };
 
-		try {
-			const url = `https://whatsapp-integration.transfunnel.io/api/contact-stats.php?${buildQuery({
-				action,
-				associatedObjectId: context.crm.objectId,
-			})}`;
-			const res = await hubspot.fetch(url, { timeout: 2000 });
-			const json = await res.json();
+  const renderTabContent = (key, Component) => {
+    const { loading, data, error } = tabData[key];
+    if (selectedTab !== key && !data && !loading && !error) return null;
+    if (loading)
+      return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
+    if (error) return <ErrorState title="Error" message={error} />;
+    if (data === "empty")
+      return (
+        <EmptyState title="No Data">
+          <Text>{error}</Text>
+        </EmptyState>
+      );
+    return <Component data={data} />;
+  };
 
-			const resKey = responseKeyMap[key];
-
-			if (json.status === "error" || !json[resKey]) {
-				setTabData((prev) => ({
-					...prev,
-					[key]: { loading: false, data: null, error: json.message || "Invalid data" },
-				}));
-			} else if (json.status === "empty") {
-				setTabData((prev) => ({
-					...prev,
-					[key]: { loading: false, data: "empty", error: json.message },
-				}));
-			} else {
-				setTabData((prev) => ({
-					...prev,
-					[key]: { loading: false, data: json[resKey], error: null },
-				}));
-			}
-		} catch (err) {
-			setTabData((prev) => ({
-				...prev,
-				[key]: { loading: false, data: null, error: "Fetch failed" },
-			}));
-		}
-	};
-
-	// Fetch initial tab on mount
-	useEffect(() => {
-		fetchTabData("messages", "recent-messages");
-	}, []);
-
-	const handleTabChange = (tabId) => {
-		setSelectedTab(tabId);
-
-		const actionMap = {
-			messages: "recent-messages",
-			senders: "message-senders",
-			stats: "monthly-counts",
-			trends: "monthly-trends",
-			distribution: "template-types",
-		};
-
-		if (!tabData[tabId].data && !tabData[tabId].loading) {
-			fetchTabData(tabId, actionMap[tabId]);
-		}
-	};
-
-	const renderTabContent = (key, Component) => {
-		const { loading, data, error } = tabData[key];
-
-		// Only render if this tab is selected OR already has data
-		if (selectedTab !== key && !data && !loading && !error) return null;
-
-		if (loading) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
-		if (error) return <ErrorState title="Error" message={error} />;
-		if (data === "empty")
-			return (
-				<EmptyState title="No Data">
-					<Text>{error}</Text>
-				</EmptyState>
-			);
-
-		// console.log("renderTabContent", key, { loading, data, error });
-
-		return <Component data={data} />;
-	};
-
-	return (
-		<>
-			<Tabs defaultSelected="messages" onSelectedChange={handleTabChange}>
-				<Tab tabId="messages" title="Recent Messages" tooltip="View the last 5 messages sent/received for this contact" tooltipPlacement="bottom" />
-				<Tab tabId="senders" title="Message Senders" tooltip="" tooltipPlacement="bottom" />
-				<Tab tabId="stats" title="Stats" tooltip="View message statistics for this contact" tooltipPlacement="bottom" />
-				<Tab tabId="trends" title="Trends" tooltip="View monthly message trends for this contact" tooltipPlacement="bottom" />
-				<Tab tabId="distribution" title="Template Usage" tooltip="View template usage distribution for this contact" tooltipPlacement="bottom" />
-			</Tabs>
-
-			{/* ACTUALLY RENDER the selected tab content */}
-			{selectedTab === "messages" && renderTabContent("messages", MessagesTab)}
-			{selectedTab === "senders" && renderTabContent("senders", SendersTab)}
-			{selectedTab === "stats" && renderTabContent("stats", StatsTab)}
-			{selectedTab === "trends" && renderTabContent("trends", TrendsTab)}
-			{selectedTab === "distribution" && renderTabContent("distribution", DistributionTab)}
-		</>
-	);
+  return (
+    <>
+      <Tabs defaultSelected={TABS_CONFIG[0].id} onSelectedChange={handleTabChange}>
+        {TABS_CONFIG.map(tab => (
+          <Tab
+            key={tab.id}
+            tabId={tab.id}
+            title={tab.title}
+            tooltip={tab.tooltip}
+            tooltipPlacement="bottom"
+          />
+        ))}
+      </Tabs>
+      {TABS_CONFIG.map(tab =>
+        selectedTab === tab.id && renderTabContent(tab.id, tab.Component)
+      )}
+    </>
+  );
 };
 
 hubspot.extend(({ context }) => <CombinedCard context={context} />);
