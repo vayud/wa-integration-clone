@@ -28,13 +28,15 @@
     "advancedScopeSettingsEnabled": true
   },
   "allowedUrls": [
+    "https://whatsapp-integration.transfunnel.io/api/contact-stats.php",
     "https://whatsapp-integration.transfunnel.io/api/crm-card.php",
-    "https://whatsapp-integration.transfunnel.io/api/contact-stats.php"
+    "https://whatsapp-integration.transfunnel.io/api/support.php"
   ],
   "permittedUrls": {
     "fetch": [
+      "https://whatsapp-integration.transfunnel.io/api/contact-stats.php",
       "https://whatsapp-integration.transfunnel.io/api/crm-card.php",
-      "https://whatsapp-integration.transfunnel.io/api/contact-stats.php"
+      "https://whatsapp-integration.transfunnel.io/api/support.php"
     ],
     "iframe": [
       "https://whatsapp-integration.transfunnel.io/tw/single-send.php",

@@ -4,12 +4,19 @@ import {
 	hubspot,
 	Button,
 	ButtonRow,
+	Divider,
 	ErrorState,
 	Flex,
+	Form,
+	Input,
 	Link,
 	LoadingSpinner,
+	Panel,
+	PanelBody,
+	Select,
 	Tag,
 	Text,
+	TextArea,
 	Tile,
 } from "@hubspot/ui-extensions";
 
@@ -25,6 +32,12 @@ const STATUS_VARIANT_MAP = {
 const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 	const [data, setData] = useState(null);
 	const [contactProperties, setContactProperties] = useState({});
+	const [formValues, setFormValues] = useState({
+		name: `${context.user.firstName || ""} ${context.user.lastName || ""}`.trim(),
+		email: context.user.email || "",
+		reason: "",
+		message: "",
+	});
 
 	useEffect(() => {
 		const loadProperties = async () => {
@@ -79,17 +92,34 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 
 	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
 
-	const billing = data.billing;
-	const frames = data.frames;
-	const guides = data.guides;
-
 	if (data && data.error) {
 		return <ErrorState title="Something went wrong."></ErrorState>;
 	}
 
+	const billing = data.billing;
+	const frames = data.frames;
+	const guides = data.guides;
+
+	const handleFormSubmit = async ({ values, valid }) => {
+		if (!valid) return;
+
+		console.log("Submitting form...");
+
+		try {
+			const response = await fetch("https://whatsapp-integration.transfunnel.io/api/support", {
+				method: "POST",
+				body: JSON.stringify(values),
+			});
+
+			if (!response.ok) throw new Error("Server error");
+		} catch (err) {
+			console.error("Form submission error:", err);
+		}
+	};
+
 	return (
-		<Flex direction={"column"} gap={"lg"}>
-			<Flex direction={"column"} gap={"sm"}>
+		<Flex direction="column" gap="md">
+			<Flex direction="column" gap="sm">
 				<Tile compact={true}>
 					<Flex gap="xs">
 						<Text format={{ fontWeight: "bold" }}>Subscription Status:</Text>
@@ -118,12 +148,12 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 				</Tile>
 			</Flex>
 
-			<Flex gap="md" justify={"center"}>
+			<Flex direction="column" gap="md" align="center" justify="center">
 				<ButtonRow dropDownButtonOptions={{ size: "sm" }}>
 					<Button
-						size={"sm"}
-						type={"button"}
-						variant={"primary"}
+						size="sm"
+						type="button"
+						variant="primary"
 						onClick={() =>
 							openIframe({
 								uri: frames.form.url,
@@ -136,9 +166,9 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 						{frames.form.label}
 					</Button>
 					<Button
-						size={"sm"}
-						type={"button"}
-						variant={"secondary"}
+						size="sm"
+						type="button"
+						variant="secondary"
 						onClick={() =>
 							openIframe({
 								uri: frames.conversation.url,
@@ -149,6 +179,80 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 						}
 					>
 						{frames.conversation.label}
+					</Button>
+				</ButtonRow>
+				<ButtonRow>
+					<Button
+						type="button"
+						size="sm"
+						variant="secondary"
+						overlay={
+							<Panel variant="modal" id="my-panel" title="Contact Support" aria-label="Contact Support">
+								<PanelBody>
+									<Form
+										autoComplete="off"
+										onSubmit={handleFormSubmit}
+										validate={({ values }) => {
+											const errors = {};
+											if (!values.name) errors.name = "Name is required";
+											if (!values.email) errors.email = "Email is required";
+											if (values.email && !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(values.email))
+												errors.email = "Enter a valid email";
+											if (!values.reason) errors.reason = "Reason is required";
+											if (!values.message) errors.message = "Message is required";
+											return errors;
+										}}
+									>
+										<Input
+											label="Name"
+											name="name"
+											placeholder="Enter your name..."
+											onChange={(val) => setFormValues((prev) => ({ ...prev, name: val }))}
+											required
+										/>
+										<Input
+											label="Email"
+											name="email"
+											type="text"
+											placeholder="your@email.com"
+											onChange={(val) => setFormValues((prev) => ({ ...prev, email: val }))}
+											required
+										/>
+										<Select
+											name="reason"
+											label="Support Reason"
+											options={[
+												{ label: "Select a reason", value: "" },
+												{ label: "Billing or Payment Issue", value: "billing" },
+												{ label: "Request a New Feature", value: "feature" },
+												{ label: "Bug or Technical Problem", value: "technical" },
+												{ label: "Account or Access Issue", value: "account" },
+												{ label: "Other", value: "other" },
+											]}
+											onChange={(val) => setFormValues((prev) => ({ ...prev, reason: val }))}
+											required
+										/>
+										<TextArea
+											rows={6}
+											name="message"
+											label="Message"
+											resize="none"
+											placeholder="Describe your issue in as much detail as possible..."
+											maxLength={1600}
+											value={formValues.message}
+											onChange={(val) => setFormValues((prev) => ({ ...prev, message: val }))}
+											required
+										/>
+										<Divider />
+										<Button type="submit" size="md" variant="primary">
+											Submit
+										</Button>
+									</Form>
+								</PanelBody>
+							</Panel>
+						}
+					>
+						Contact Support
 					</Button>
 				</ButtonRow>
 			</Flex>
