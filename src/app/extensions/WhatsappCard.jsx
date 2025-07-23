@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
 	hubspot,
 	Button,
@@ -29,7 +28,9 @@ const STATUS_VARIANT_MAP = {
 	Inactive: "default",
 };
 
-const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
+const baseApiUrl = "https://whatsapp-integration.transfunnel.io/api";
+
+const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe }) => {
 	const [data, setData] = useState(null);
 	const [contactProperties, setContactProperties] = useState({});
 	const [formValues, setFormValues] = useState({
@@ -68,7 +69,7 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 				mobilephone: contactProperties.mobilephone,
 			};
 
-			const url = `https://whatsapp-integration.transfunnel.io/api/crm-card.php`;
+			const url = `${baseApiUrl}/crm-card.php`;
 			try {
 				const response = await hubspot.fetch(url, {
 					timeout: 2_000,
@@ -90,6 +91,16 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 		fetchData();
 	}, [context, contactProperties]);
 
+	useEffect(() => {
+		if (context?.user) {
+			setFormValues((prev) => ({
+				...prev,
+				name: `${context.user.firstName || ""} ${context.user.lastName || ""}`.trim(),
+				email: context.user.email || "",
+			}));
+		}
+	}, [context.user]);
+
 	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
 
 	if (data && data.error) {
@@ -100,20 +111,71 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 	const frames = data.frames;
 	const guides = data.guides;
 
-	const handleFormSubmit = async ({ values, valid }) => {
-		if (!valid) return;
+	const handleFormSubmit = async () => {
+		const errors = {};
 
-		console.log("Submitting form...");
+		if (!formValues.name) errors.name = "Name is required";
+		if (!formValues.email) {
+			errors.email = "Email is required";
+		} else if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(formValues.email)) {
+			errors.email = "Enter a valid email address";
+		}
+		if (!formValues.reason) errors.reason = "Reason is required";
+		if (!formValues.message) errors.message = "Message is required";
 
+		const valid = Object.keys(errors).length === 0;
+
+		if (!valid) {
+			// Determine title based on type of errors
+			const title = Object.values(errors).includes("Enter a valid email address")
+				? "Invalid Email Format!"
+				: "Missing Required Fields!";
+
+			addAlert({
+				title,
+				message: Object.values(errors).join("\n"),
+				type: "warning",
+			});
+			return;
+		}
+
+		// Proceed with submission
 		try {
-			const response = await fetch("https://whatsapp-integration.transfunnel.io/api/support", {
+			const response = await hubspot.fetch(`${baseApiUrl}/support.php`, {
+				timeout: 2000,
 				method: "POST",
-				body: JSON.stringify(values),
+				body: formValues,
 			});
 
-			if (!response.ok) throw new Error("Server error");
+			if (!response.ok) throw new Error("Submission failed");
+
+			if (response.status == "success") {
+				addAlert({
+					title: "Support request submitted!",
+					message: "Thank you! Our team will contact you soon.",
+					type: "success",
+				});
+
+				setFormValues({
+					name: `${context.user.firstName || ""} ${context.user.lastName || ""}`.trim(),
+					email: context.user.email || "",
+					reason: "",
+					message: "",
+				});
+			} else {
+				addAlert({
+					title: "Undefined error!",
+					message: "An undefined error has occurred. Please try again later.",
+					type: "danger",
+				});
+			}
 		} catch (err) {
-			console.error("Form submission error:", err);
+			addAlert({
+				title: "Failed to submit support request!",
+				message: "Please try again later.",
+				type: "danger",
+			});
+			console.error(err);
 		}
 	};
 
@@ -180,8 +242,6 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 					>
 						{frames.conversation.label}
 					</Button>
-				</ButtonRow>
-				<ButtonRow>
 					<Button
 						type="button"
 						size="sm"
@@ -189,24 +249,16 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 						overlay={
 							<Panel variant="modal" id="my-panel" title="Contact Support" aria-label="Contact Support">
 								<PanelBody>
-									<Form
-										autoComplete="off"
-										onSubmit={handleFormSubmit}
-										validate={({ values }) => {
-											const errors = {};
-											if (!values.name) errors.name = "Name is required";
-											if (!values.email) errors.email = "Email is required";
-											if (values.email && !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(values.email))
-												errors.email = "Enter a valid email";
-											if (!values.reason) errors.reason = "Reason is required";
-											if (!values.message) errors.message = "Message is required";
-											return errors;
-										}}
-									>
+									<Text>
+										Need help? Submit your query using the form below and our support team will get in touch with you
+										shortly.
+									</Text>
+									<Form autoComplete="off" onSubmit={handleFormSubmit}>
 										<Input
 											label="Name"
 											name="name"
 											placeholder="Enter your name..."
+											value={formValues.name}
 											onChange={(val) => setFormValues((prev) => ({ ...prev, name: val }))}
 											required
 										/>
@@ -215,12 +267,15 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 											name="email"
 											type="text"
 											placeholder="your@email.com"
+											value={formValues.email}
 											onChange={(val) => setFormValues((prev) => ({ ...prev, email: val }))}
 											required
 										/>
 										<Select
 											name="reason"
 											label="Support Reason"
+											value={formValues.reason}
+											onChange={(val) => setFormValues((prev) => ({ ...prev, reason: val }))}
 											options={[
 												{ label: "Select a reason", value: "" },
 												{ label: "Billing or Payment Issue", value: "billing" },
@@ -229,7 +284,6 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 												{ label: "Account or Access Issue", value: "account" },
 												{ label: "Other", value: "other" },
 											]}
-											onChange={(val) => setFormValues((prev) => ({ ...prev, reason: val }))}
 											required
 										/>
 										<TextArea
@@ -263,6 +317,7 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, openIframe }) => {
 hubspot.extend(({ context, actions }) => (
 	<DynamicCard
 		context={context}
+		addAlert={actions.addAlert}
 		openIframe={actions.openIframeModal}
 		fetchCrmObjectProperties={actions.fetchCrmObjectProperties}
 	/>
