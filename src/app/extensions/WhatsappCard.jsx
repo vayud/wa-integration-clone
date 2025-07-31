@@ -30,7 +30,7 @@ const STATUS_VARIANT_MAP = {
 
 const baseApiUrl = "https://whatsapp-integration.transfunnel.io/api";
 
-const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe }) => {
+const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, closeOverlay }) => {
 	const [data, setData] = useState(null);
 	const [contactProperties, setContactProperties] = useState({});
 	const [formValues, setFormValues] = useState({
@@ -149,18 +149,19 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe }
 
 			if (!response.ok) throw new Error("Submission failed");
 
-			if (response.status == "success") {
-				addAlert({
-					title: "Support request submitted!",
-					message: "Thank you! Our team will contact you soon.",
-					type: "success",
-				});
-
+			if (response.status == 200) {
 				setFormValues({
 					name: `${context.user.firstName || ""} ${context.user.lastName || ""}`.trim(),
 					email: context.user.email || "",
 					reason: "",
 					message: "",
+				});
+
+				closeOverlay("panel-contact-form");
+				addAlert({
+					title: "Support request submitted!",
+					message: "Thank you! Our team will contact you soon.",
+					type: "success",
 				});
 			} else {
 				addAlert({
@@ -247,7 +248,7 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe }
 						size="sm"
 						variant="secondary"
 						overlay={
-							<Panel variant="modal" id="my-panel" title="Contact Support" aria-label="Contact Support">
+							<Panel variant="modal" id="panel-contact-form" title="Contact Support" aria-label="Contact Support">
 								<PanelBody>
 									<Text>
 										Need help? Submit your query using the form below and our support team will get in touch with you
@@ -320,5 +321,6 @@ hubspot.extend(({ context, actions }) => (
 		addAlert={actions.addAlert}
 		openIframe={actions.openIframeModal}
 		fetchCrmObjectProperties={actions.fetchCrmObjectProperties}
+		closeOverlay={actions.closeOverlay}
 	/>
 ));
