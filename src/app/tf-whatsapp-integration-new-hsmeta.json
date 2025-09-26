@@ -8,19 +8,18 @@
         "http://localhost:3000/oauth"
       ],
       "optionalScopes": [
-        "crm.schemas.contacts.write",
-        "crm.schemas.contacts.read"
+        "crm.schemas.contacts.read",
+        "crm.schemas.contacts.write"
       ],
       "requiredScopes": [
-        "account-info.security.read",
-        "tickets",
         "automation",
-        "crm.objects.owners.read",
-        "crm.objects.contacts.write",
-        "timeline",
-        "oauth",
         "crm.objects.contacts.read",
-        "crm.objects.users.read"
+        "crm.objects.contacts.write",
+        "crm.objects.owners.read",
+        "crm.objects.users.read",
+        "oauth",
+        "tickets",
+        "timeline"
       ],
       "conditionallyRequiredScopes": []
     },
@@ -40,6 +39,7 @@
       "fetch": [
         "https://whatsapp-integration.transfunnel.io/api/contact-stats.php",
         "https://whatsapp-integration.transfunnel.io/api/crm-card.php",
+        "https://whatsapp-integration.transfunnel.io/api/settings.php",
         "https://whatsapp-integration.transfunnel.io/api/support.php"
       ],
       "iframe": [
