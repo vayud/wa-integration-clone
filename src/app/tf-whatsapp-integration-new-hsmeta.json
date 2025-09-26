@@ -1,0 +1,55 @@
+{
+  "config": {
+    "auth": {
+      "type": "oauth",
+      "redirectUrls": [
+        "http://localhost/projects/whatsapp-integration/process.php",
+        "https://whatsapp-integration.transfunnel.io/process.php",
+        "http://localhost:3000/oauth"
+      ],
+      "optionalScopes": [
+        "crm.schemas.contacts.write",
+        "crm.schemas.contacts.read"
+      ],
+      "requiredScopes": [
+        "account-info.security.read",
+        "tickets",
+        "automation",
+        "crm.objects.owners.read",
+        "crm.objects.contacts.write",
+        "timeline",
+        "oauth",
+        "crm.objects.contacts.read",
+        "crm.objects.users.read"
+      ],
+      "conditionallyRequiredScopes": []
+    },
+    "logo": "/app/app-logo.png",
+    "name": "WhatsApp Integration (New)",
+    "support": {
+      "supportEmail": "productsupport@transfunnel.com",
+      "documentationUrl": "https://www.transfunnel.com/marketplace/hubspot-whatsapp-integration/a-complete-guide"
+    },
+    "description": "WhatsApp Business API Integration React",
+    "isUserLevel": false,
+    "distribution": "MARKETPLACE",
+    "permittedUrls": {
+      "img": [
+        "https://whatsapp-integration.transfunnel.io/assets"
+      ],
+      "fetch": [
+        "https://whatsapp-integration.transfunnel.io/api/contact-stats.php",
+        "https://whatsapp-integration.transfunnel.io/api/crm-card.php",
+        "https://whatsapp-integration.transfunnel.io/api/support.php"
+      ],
+      "iframe": [
+        "https://whatsapp-integration.transfunnel.io/customer-portal.php",
+        "https://whatsapp-integration.transfunnel.io/kl/single-send.php",
+        "https://whatsapp-integration.transfunnel.io/tw/single-send.php",
+        "https://whatsapp-integration.transfunnel.io/chats.php"
+      ]
+    }
+  },
+  "uid": "tf-whatsapp-integration-new",
+  "type": "app"
+}
