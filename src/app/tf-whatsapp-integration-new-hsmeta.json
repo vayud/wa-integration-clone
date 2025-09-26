@@ -40,6 +40,7 @@
         "https://whatsapp-integration.transfunnel.io/api/contact-stats.php",
         "https://whatsapp-integration.transfunnel.io/api/crm-card.php",
         "https://whatsapp-integration.transfunnel.io/api/settings.php",
+        "https://whatsapp-integration.transfunnel.io/api/stats.php",
         "https://whatsapp-integration.transfunnel.io/api/support.php"
       ],
       "iframe": [
