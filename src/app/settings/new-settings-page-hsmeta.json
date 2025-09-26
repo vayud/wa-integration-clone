@@ -1,0 +1,7 @@
+{
+  "uid": "settings-wa-integration-clone",
+  "type": "settings",
+  "config": {
+    "entrypoint": "/app/settings/NewSettingsPage.tsx"
+  }
+}
