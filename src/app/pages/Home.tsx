@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from "react";
 import {
-	AutoGrid,
-	BarChart,
-	LineChart,
-	EmptyState,
-	ErrorState,
-	LoadingSpinner,
-	Flex,
-	Text,
-	Tile,
 	hubspot,
 	Accordion,
+	AutoGrid,
+	BarChart,
+	Box,
 	DescriptionList,
 	DescriptionListItem,
 	Divider,
+	EmptyState,
+	ErrorState,
+	Flex,
+	Heading,
 	Image,
-	Tag,
+	LineChart,
+	LoadingSpinner,
 	Statistics,
 	StatisticsItem,
 	StatisticsTrend,
-	Heading,
+	Tag,
+	Text,
+	Tile,
 } from "@hubspot/ui-extensions";
 
 const baseApiUrl = "https://whatsapp-integration.transfunnel.io/api";
@@ -41,11 +42,11 @@ const COMPONENTS_CONFIG = [
 		enabled: true,
 	},
 	{
-		id: "stats",
+		id: "counts",
 		title: "Message Statistics",
 		action: "monthly-counts",
-		responseKey: "stats",
-		enabled: false,
+		responseKey: "counts",
+		enabled: true,
 	},
 	{
 		id: "trends",
@@ -55,11 +56,11 @@ const COMPONENTS_CONFIG = [
 		enabled: true,
 	},
 	{
-		id: "distribution",
+		id: "templateUsage",
 		title: "Template Usage Distribution",
 		action: "template-types",
-		responseKey: "distribution",
-		enabled: false,
+		responseKey: "templateUsage",
+		enabled: true,
 	},
 ];
 
@@ -141,9 +142,9 @@ const NewHomesPage = ({ context }: { context: any }) => {
 	const [allData, setAllData] = useState({
 		messages: null,
 		senders: null,
-		stats: null,
+		counts: null,
 		trends: null,
-		distribution: null,
+		templateUsage: null,
 	});
 
 	// Single data fetching function for all components
@@ -168,9 +169,9 @@ const NewHomesPage = ({ context }: { context: any }) => {
 				setAllData({
 					messages: json.data.messages || null,
 					senders: json.data.senders || null,
-					stats: json.data.stats || null,
+					counts: json.data.counts || null,
 					trends: json.data.trends || null,
-					distribution: json.data.distribution || null,
+					templateUsage: json.data.templateUsage || null,
 				});
 			}
 		} catch (err) {
@@ -215,212 +216,221 @@ const NewHomesPage = ({ context }: { context: any }) => {
 		<>
 			<Text>
 				This dashboard provides insights into your account's messaging activities through WhatsApp Integration. Data is
-				refreshed every time you open this page.
+				refreshed every time you open/refresh this page.
 			</Text>
-			<AutoGrid columnWidth={1000} flexible={true} gap="md">
-				{/* Recent Messages Tile */}
-				{isEnabled("messages") && (
-					<Tile compact={true}>
-						<Heading>Recent Messages</Heading>
-						<Divider />
-						{renderTileContent(
-							allData.messages,
-							"No recent messages to display",
-							<Flex direction="column" gap="xs">
-								{allData.messages?.map((message, index) => {
-									// Skip rendering if message is empty or null
-									if (!message.message) {
-										return null;
-									}
-
-									var itemTitle =
-										message.action === "sent"
-											? `Message Sent | ${message.timestamp}`
-											: `Message Received | ${message.timestamp}`;
-									return (
-										<Accordion key={index} title={itemTitle}>
-											<Flex direction="column" gap="sm" justify="center" align="center">
-												{/* <Text> {message.message} </Text> */}
-												<Flex wrap="wrap" gap="xs" align="baseline">
-													{formatMessageComponents(message.message)}
-												</Flex>
-												{message.media_type == "image" && message.media_url && (
-													<Image alt="Image" src={message.media_url} />
-												)}
-											</Flex>
-											<>
-												<Divider />
-												<DescriptionList direction="row">
-													{message.action === "sent" && (
-														<DescriptionListItem label="Status">
-															<Tag variant={STATUS_VARIANT_MAP[message.message_status] || "default"}>
-																{message.message_status || "N/A"}
-															</Tag>
-														</DescriptionListItem>
-													)}
-													{message.action === "sent" && (
-														<DescriptionListItem label="Campaign">
-															<Text>{message.campaign || "N/A"}</Text>
-														</DescriptionListItem>
-													)}
-													<DescriptionListItem label="Sent By">
-														<Text>{message.sent_by || "N/A"}</Text>
-													</DescriptionListItem>
-												</DescriptionList>
-											</>
-										</Accordion>
-									);
-								})}
-							</Flex>
-						)}
-					</Tile>
-				)}
-
-				{/* Message Senders Tile */}
-				{isEnabled("senders") && (
-					<Tile compact={true}>
-						<Heading>Message Senders</Heading>
-						<Divider />
-						{renderTileContent(
-							allData.senders,
-							"No sender data to display",
-							<>
-								<BarChart
-									data={allData.senders}
-									axes={{
-										x: { field: "userEmail", fieldType: "category", label: "Sender" },
-										y: { field: "count", fieldType: "linear", label: "Messages Sent" },
-										options: {
-											groupFieldByColor: "userEmail",
-										},
-									}}
-									options={{
-										showLegend: true,
-										showDataLabels: true,
-									}}
-								/>
-								<Flex direction="column" align="center">
-									<Text variant="microcopy">
-										The chart displays the number of messages sent, grouped by the sender (user or workflow).
-									</Text>
-								</Flex>
-							</>
-						)}
-					</Tile>
-				)}
-
-				{/* Message Statistics Tile */}
-				{isEnabled("stats") && (
-					<Tile compact={true}>
-						<Heading>Message Statistics</Heading>
-						<Divider />
-						{renderTileContent(
-							allData.stats,
-							"No statistics data to display",
-							<Statistics>
-								{["sent", "failed", "received"].map((type) => (
-									<StatisticsItem
-										key={type}
-										label={type.charAt(0).toUpperCase() + type.slice(1)}
-										number={allData.stats?.[type]?.this_month ?? 0}
-									>
-										{allData.stats?.[type]?.change?.type !== "none" && allData.stats?.[type]?.change && (
-											<StatisticsTrend
-												direction={allData.stats[type].change.type}
-												value={`${allData.stats[type].change.change ?? 0}%`}
+			<Flex direction="column" gap="md">
+				<AutoGrid columnWidth={1000} flexible={true} gap="md">
+					{/* Monthly Trends Tile */}
+					{isEnabled("trends") && (
+						<Tile compact={true}>
+							<Flex direction="column" gap="lg">
+								<Box>
+									<Heading>Monthly Trends</Heading>
+									<Divider />
+									{renderTileContent(
+										allData.trends,
+										"No recent trends data to display",
+										<>
+											<LineChart
+												data={
+													allData.trends?.flatMap((row) => [
+														{ Month: row.month, Metric: "Sent", "Message Counts": row.sent },
+														{ Month: row.month, Metric: "Failed", "Message Counts": row.failed },
+														{ Month: row.month, Metric: "Received", "Message Counts": row.received },
+													]) || []
+												}
+												axes={{
+													x: { field: "Month", fieldType: "category" },
+													y: { field: "Message Counts", fieldType: "linear" },
+													options: { groupFieldByColor: "Metric" },
+												}}
+												options={{
+													showLegend: true,
+													showDataLabels: true,
+													showTooltips: true,
+													colorList: ["green", "darkOrange", "darkBlue"],
+												}}
 											/>
-										)}
-										<Text variant="microcopy">Last month: {allData.stats?.[type]?.last_month ?? 0}</Text>
-									</StatisticsItem>
-								))}
-							</Statistics>
-						)}
-					</Tile>
-				)}
+											<Flex direction="column" align="center">
+												<Text variant="microcopy">
+													The chart displays a monthly breakdown of WhatsApp messages, covering up to the last 12
+													months.
+												</Text>
+											</Flex>
+										</>
+									)}
+								</Box>
+								<Box>
+									{renderTileContent(
+										allData.counts,
+										"No recent statistics data to display",
+										<Statistics>
+											{["sent", "failed", "received"].map((type) => (
+												<StatisticsItem
+													key={type}
+													label={type.charAt(0).toUpperCase() + type.slice(1)}
+													number={allData.counts?.[type]?.this_month ?? 0}
+												>
+													{allData.counts?.[type]?.change?.type !== "none" && allData.counts?.[type]?.change && (
+														<StatisticsTrend
+															direction={allData.counts[type].change.type}
+															value={`${allData.counts[type].change.change ?? 0}%`}
+														/>
+													)}
+													<Text variant="microcopy">Last month: {allData.counts?.[type]?.last_month ?? 0}</Text>
+												</StatisticsItem>
+											))}
+										</Statistics>
+									)}
+								</Box>
+							</Flex>
+						</Tile>
+					)}
 
-				{/* Monthly Trends Tile */}
-				{isEnabled("trends") && (
-					<Tile compact={true}>
-						<Heading>Monthly Trends</Heading>
-						<Divider />
-						{renderTileContent(
-							allData.trends,
-							"No trends data to display",
-							<>
-								<LineChart
-									data={
-										allData.trends?.flatMap((row) => [
-											{ Month: row.month, Metric: "Sent", Count: row.sent },
-											{ Month: row.month, Metric: "Failed", Count: row.failed },
-											{ Month: row.month, Metric: "Received", Count: row.received },
-										]) || []
-									}
-									axes={{
-										x: { field: "Month", fieldType: "category" },
-										y: { field: "Count", fieldType: "linear" },
-										options: { groupFieldByColor: "Metric" },
-									}}
-									options={{
-										showLegend: true,
-										showDataLabels: true,
-										colorList: ["darkGreen", "darkOrange", "darkBlue"],
-									}}
-								/>
-								<Flex direction="column" align="center">
-									<Text variant="microcopy">
-										The chart displays a monthly breakdown of WhatsApp messages, covering up to the last 12 months.
-									</Text>
+					{/* Recent Messages Tile */}
+					{isEnabled("messages") && (
+						<Tile compact={true}>
+							<Heading>Recent Messages</Heading>
+							<Divider />
+							{renderTileContent(
+								allData.messages,
+								"No recent messages to display",
+								<Flex direction="column" gap="xs">
+									{allData.messages?.map((message, index) => {
+										// Skip rendering if message is empty or null
+										if (!message.message) {
+											return null;
+										}
+
+										var itemTitle =
+											message.action === "sent"
+												? `Message Sent | ${message.timestamp}`
+												: `Message Received | ${message.timestamp}`;
+										return (
+											<Accordion key={index} title={itemTitle}>
+												<Flex direction="column" gap="sm" justify="center" align="center">
+													{/* <Text> {message.message} </Text> */}
+													<Flex wrap="wrap" gap="xs" align="baseline">
+														{formatMessageComponents(message.message)}
+													</Flex>
+													{message.media_type == "image" && message.media_url && (
+														<Image alt="Image" src={message.media_url} />
+													)}
+												</Flex>
+												<>
+													<Divider />
+													<DescriptionList direction="row">
+														{message.action === "sent" && (
+															<DescriptionListItem label="Status">
+																<Tag variant={STATUS_VARIANT_MAP[message.message_status] || "default"}>
+																	{message.message_status || "N/A"}
+																</Tag>
+															</DescriptionListItem>
+														)}
+														{message.action === "sent" && (
+															<DescriptionListItem label="Campaign">
+																<Text>{message.campaign || "N/A"}</Text>
+															</DescriptionListItem>
+														)}
+														<DescriptionListItem label="Sent By">
+															<Text>{message.sent_by || "N/A"}</Text>
+														</DescriptionListItem>
+													</DescriptionList>
+												</>
+											</Accordion>
+										);
+									})}
+									<Flex direction="column" align="center">
+										<Text variant="microcopy">
+											The last 10 messages sent and received through WhatsApp Integration for your account.
+										</Text>
+									</Flex>
 								</Flex>
-							</>
-						)}
-					</Tile>
-				)}
+							)}
+						</Tile>
+					)}
+				</AutoGrid>
 
-				{/* Template Usage Distribution Tile */}
-				{isEnabled("distribution") && (
-					<Tile compact={true}>
-						<Heading>Template Usage Distribution</Heading>
-						<Divider />
-						{renderTileContent(
-							allData.distribution,
-							"No template distribution data to display",
-							<>
-								<BarChart
-									data={
-										allData.distribution
-											? Object.entries(allData.distribution).map(([type, count]) => ({ type, count: Number(count) }))
-											: []
-									}
-									axes={{
-										x: { field: "type", fieldType: "category", label: "Template Type" },
-										y: { field: "count", fieldType: "linear", label: "Count" },
-										options: {
-											groupFieldByColor: "type",
-											colors: {
-												"Call to action": "darkBlue",
-												Card: "purple",
-												Carousel: "orange",
-												Media: "darkGreen",
-												"Quick reply": "darkOrange",
-												Text: "aqua",
+				<AutoGrid columnWidth={500} flexible={true} gap="md">
+					{/* Message Senders Tile */}
+					{isEnabled("senders") && (
+						<Tile compact={true}>
+							<Heading>Message Senders</Heading>
+							<Divider />
+							{renderTileContent(
+								allData.senders,
+								"No recent sender data to display",
+								<>
+									<BarChart
+										data={allData.senders}
+										axes={{
+											x: { field: "userEmail", fieldType: "category", label: "Sender" },
+											y: { field: "count", fieldType: "linear", label: "Messages Sent" },
+											options: {
+												groupFieldByColor: "userEmail",
 											},
-										},
-									}}
-									options={{
-										showLegend: true,
-										showDataLabels: true,
-									}}
-								/>
-								<Flex direction="column" align="center">
-									<Text variant="microcopy">
-										The chart displays the distribution of WhatsApp message templates, grouped by template type.
-									</Text>
-								</Flex>
-							</>
-						)}
-					</Tile>
-				)}
-			</AutoGrid>
+										}}
+										options={{
+											showLegend: true,
+											showDataLabels: true,
+										}}
+									/>
+									<Flex direction="column" align="center">
+										<Text variant="microcopy">
+											The chart displays the number of messages sent, grouped by the sender (user or workflow).
+										</Text>
+									</Flex>
+								</>
+							)}
+						</Tile>
+					)}
+
+					{/* Template Usage Distribution Tile */}
+					{isEnabled("templateUsage") && (
+						<Tile compact={true}>
+							<Heading>Template Usage Distribution</Heading>
+							<Divider />
+							{renderTileContent(
+								allData.templateUsage,
+								"No recent template usage data to display",
+								<>
+									<BarChart
+										data={
+											allData.templateUsage
+												? Object.entries(allData.templateUsage).map(([type, count]) => ({ type, count: Number(count) }))
+												: []
+										}
+										axes={{
+											x: { field: "type", fieldType: "category", label: "Template Type" },
+											y: { field: "count", fieldType: "linear", label: "Count" },
+											options: {
+												groupFieldByColor: "type",
+												colors: {
+													"Call to action": "darkBlue",
+													Card: "purple",
+													Carousel: "orange",
+													Media: "darkGreen",
+													"Quick reply": "darkOrange",
+													Text: "aqua",
+												},
+											},
+										}}
+										options={{
+											showLegend: true,
+											showDataLabels: true,
+										}}
+									/>
+									<Flex direction="column" align="center">
+										<Text variant="microcopy">
+											The chart displays the usage counts of various WhatsApp message template types over last 30 days.
+										</Text>
+									</Flex>
+								</>
+							)}
+						</Tile>
+					)}
+				</AutoGrid>
+			</Flex>
 		</>
 	);
 };
