@@ -23,6 +23,7 @@ import {
 	PanelBody,
 	Select,
 	TextArea,
+	Link,
 	Statistics,
 	StatisticsItem,
 	StatisticsTrend,
@@ -378,9 +379,7 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 				</PrimaryHeaderActionButton>
 				<SecondaryHeaderActionButton
 					href={{
-						url: `${baseApiUrl}/install-guide.php?portalId=${encodeURIComponent(
-							String(context.portal?.id || "")
-						)}`,
+						url: `${baseApiUrl}/install-guide.php?portalId=${encodeURIComponent(String(context.portal?.id || ""))}`,
 						external: true,
 					}}
 				>
@@ -517,6 +516,18 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 															<Text>{message.sent_by || "N/A"}</Text>
 														</DescriptionListItem>
 													</DescriptionList>
+													{message.associated_object_id && (
+														<Link
+															href={{
+																url: `https://app.hubspot.com/contacts/${encodeURIComponent(
+																	String(context.portal?.id || "")
+																)}/record/0-1/${encodeURIComponent(String(message.associated_object_id))}`,
+																external: true,
+															}}
+														>
+															View Contact
+														</Link>
+													)}
 												</>
 											</Accordion>
 										);
