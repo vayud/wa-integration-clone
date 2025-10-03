@@ -3,6 +3,8 @@ import {
 	hubspot,
 	Accordion,
 	AutoGrid,
+	Button,
+	ButtonRow,
 	BarChart,
 	Box,
 	DescriptionList,
@@ -11,10 +13,16 @@ import {
 	EmptyState,
 	ErrorState,
 	Flex,
+	Form,
 	Heading,
 	Image,
+	Input,
 	LineChart,
 	LoadingSpinner,
+	Panel,
+	PanelBody,
+	Select,
+	TextArea,
 	Statistics,
 	StatisticsItem,
 	StatisticsTrend,
@@ -22,6 +30,11 @@ import {
 	Text,
 	Tile,
 } from "@hubspot/ui-extensions";
+import {
+	HeaderActions,
+	PrimaryHeaderActionButton,
+	SecondaryHeaderActionButton,
+} from "@hubspot/ui-extensions/pages/home";
 
 const baseApiUrl = "https://whatsapp-integration.transfunnel.io/api";
 
@@ -136,9 +149,15 @@ const getEnabledComponentIds = () => {
 		.join(",");
 };
 
-const NewHomesPage = ({ context }: { context: any }) => {
+const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
+	const [formValues, setFormValues] = useState({
+		name: `${context.user?.firstName || ""} ${context.user?.lastName || ""}`.trim(),
+		email: context.user?.email || "",
+		reason: "",
+		message: "",
+	});
 	const [allData, setAllData] = useState({
 		messages: null,
 		senders: null,
@@ -186,6 +205,85 @@ const NewHomesPage = ({ context }: { context: any }) => {
 		fetchAllData();
 	}, []);
 
+	// update form defaults when context.user changes
+	useEffect(() => {
+		if (context?.user) {
+			setFormValues((prev) => ({
+				...prev,
+				name: `${context.user.firstName || ""} ${context.user.lastName || ""}`.trim(),
+				email: context.user.email || "",
+			}));
+		}
+	}, [context.user]);
+
+	const handleFormSubmit = async () => {
+		const errors: any = {};
+		if (!formValues.name) errors.name = "Name is required";
+		if (!formValues.email) {
+			errors.email = "Email is required";
+		} else if (!/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(formValues.email)) {
+			errors.email = "Enter a valid email address";
+		}
+		if (!formValues.reason) errors.reason = "Reason is required";
+		if (!formValues.message) errors.message = "Message is required";
+
+		const valid = Object.keys(errors).length === 0;
+		if (!valid) {
+			const title = Object.values(errors).includes("Enter a valid email address")
+				? "Invalid Email Format!"
+				: "Missing Required Fields!";
+			if (actions?.addAlert) {
+				actions.addAlert({
+					title,
+					message: Object.values(errors).join("\n"),
+					type: "warning",
+				});
+			}
+			return;
+		}
+
+		try {
+			const response = await hubspot.fetch(`${baseApiUrl}/support.php`, {
+				timeout: 2000,
+				method: "POST",
+				body: formValues,
+			});
+
+			if (!response.ok) throw new Error("Submission failed");
+
+			if (response.status == 200) {
+				setFormValues({
+					name: `${context.user?.firstName || ""} ${context.user?.lastName || ""}`.trim(),
+					email: context.user?.email || "",
+					reason: "",
+					message: "",
+				});
+				if (actions?.closeOverlay) actions.closeOverlay("panel-contact-form");
+				if (actions?.addAlert)
+					actions.addAlert({
+						title: "Support request submitted!",
+						message: "Thank you! Our team will contact you soon.",
+						type: "success",
+					});
+			} else {
+				if (actions?.addAlert)
+					actions.addAlert({
+						title: "Undefined error!",
+						message: "An undefined error has occurred. Please try again later.",
+						type: "danger",
+					});
+			}
+		} catch (err) {
+			if (actions?.addAlert)
+				actions.addAlert({
+					title: "Failed to submit support request!",
+					message: "Please try again later.",
+					type: "danger",
+				});
+			console.error(err);
+		}
+	};
+
 	// Helper function to check if data is empty
 	const isEmpty = (data: any) =>
 		!data || (Array.isArray(data) && data.length === 0) || (typeof data === "object" && Object.keys(data).length === 0);
@@ -214,6 +312,89 @@ const NewHomesPage = ({ context }: { context: any }) => {
 
 	return (
 		<>
+			<HeaderActions>
+				<PrimaryHeaderActionButton
+					overlay={
+						<Panel variant="modal" id="panel-contact-form" title="Contact Support" aria-label="Contact Support">
+							<PanelBody>
+								<Text>
+									Need help? Submit your query using the form below and our support team will get in touch with you
+									shortly.
+								</Text>
+								<Form autoComplete="off" onSubmit={handleFormSubmit}>
+									<Input
+										label="Name"
+										name="name"
+										placeholder="Enter your name..."
+										value={formValues.name}
+										onChange={(val) => setFormValues((prev) => ({ ...prev, name: val }))}
+										required
+									/>
+									<Input
+										label="Email"
+										name="email"
+										type="text"
+										placeholder="your@email.com"
+										value={formValues.email}
+										onChange={(val) => setFormValues((prev) => ({ ...prev, email: val }))}
+										required
+									/>
+									<Select
+										name="reason"
+										label="Support Reason"
+										value={formValues.reason}
+										onChange={(val: any) => setFormValues((prev) => ({ ...prev, reason: String(val) }))}
+										options={[
+											{ label: "Select a reason", value: "" },
+											{ label: "Billing or Payment Issue", value: "billing" },
+											{ label: "Request a New Feature", value: "feature" },
+											{ label: "Bug or Technical Problem", value: "technical" },
+											{ label: "Account or Access Issue", value: "account" },
+											{ label: "Other", value: "other" },
+										]}
+										required
+									/>
+									<TextArea
+										rows={6}
+										name="message"
+										label="Message"
+										resize="none"
+										placeholder="Describe your issue in as much detail as possible..."
+										maxLength={1600}
+										value={formValues.message}
+										onChange={(val: any) => setFormValues((prev) => ({ ...prev, message: String(val) }))}
+										required
+									/>
+									<Divider />
+									<Button type="submit" size="md" variant="primary">
+										Submit
+									</Button>
+								</Form>
+							</PanelBody>
+						</Panel>
+					}
+				>
+					Contact Support
+				</PrimaryHeaderActionButton>
+				<SecondaryHeaderActionButton
+					href={{
+						url: `${baseApiUrl}/install-guide.php?portalId=${encodeURIComponent(
+							String(context.portal?.id || "")
+						)}`,
+						external: true,
+					}}
+				>
+					View Installation Guide
+				</SecondaryHeaderActionButton>
+				<SecondaryHeaderActionButton
+					href={{
+						url: `${baseApiUrl}/templates-guide.php`,
+						external: true,
+					}}
+				>
+					View Templates Guide
+				</SecondaryHeaderActionButton>
+			</HeaderActions>
 			<Text>
 				This dashboard provides insights into your account's messaging activities through WhatsApp Integration. Data is
 				refreshed every time you open/refresh this page.
@@ -435,6 +616,6 @@ const NewHomesPage = ({ context }: { context: any }) => {
 	);
 };
 
-hubspot.extend<"home">(({ context }) => {
-	return <NewHomesPage context={context} />;
+hubspot.extend<"home">(({ context, actions }) => {
+	return <NewHomesPage context={context} actions={actions} />;
 });
