@@ -1,0 +1,550 @@
+{
+  "uid": "wa-integration-send-action",
+  "type": "workflow-action",
+  "config": {
+    "actionUrl": "https://whatsapp-integration.transfunnel.io/send.php",
+    "isPublished": false,
+    "supportedClients": [
+      {
+        "client": "WORKFLOWS"
+      }
+    ],
+    "executionRules": [
+      {
+        "labelName": "accessDenied",
+        "conditions": {
+          "status_message": [
+            "ACCESS_DENIED"
+          ]
+        }
+      },
+      {
+        "labelName": "emptyPayload",
+        "conditions": {
+          "status_message": [
+            "EMPTY_PAYLOAD"
+          ]
+        }
+      },
+      {
+        "labelName": "incompletePayload",
+        "conditions": {
+          "status_message": [
+            "INCOMPLETE_PAYLOAD"
+          ]
+        }
+      },
+      {
+        "labelName": "emptyResponse",
+        "conditions": {
+          "status_message": [
+            "EMPTY_RESPONSE"
+          ]
+        }
+      },
+      {
+        "labelName": "invalidSignature",
+        "conditions": {
+          "status_message": [
+            "INVALID_SIGNATURE"
+          ]
+        }
+      },
+      {
+        "labelName": "missingContact",
+        "conditions": {
+          "status_message": [
+            "MISSING_CONTACT"
+          ]
+        }
+      },
+      {
+        "labelName": "missingCredentials",
+        "conditions": {
+          "status_message": [
+            "MISSING_CREDENTIALS"
+          ]
+        }
+      },
+      {
+        "labelName": "missingMedia",
+        "conditions": {
+          "status_message": [
+            "MISSING_MEDIA"
+          ]
+        }
+      },
+      {
+        "labelName": "missingMessage",
+        "conditions": {
+          "status_message": [
+            "MISSING_MESSAGE"
+          ]
+        }
+      },
+      {
+        "labelName": "missingPlaceName",
+        "conditions": {
+          "status_message": [
+            "MISSING_PLACE"
+          ]
+        }
+      },
+      {
+        "labelName": "missingCoordinates",
+        "conditions": {
+          "status_message": [
+            "MISSING_COORDINATES"
+          ]
+        }
+      },
+      {
+        "labelName": "missingTemplate",
+        "conditions": {
+          "status_message": [
+            "MISSING_TEMPLATE"
+          ]
+        }
+      },
+      {
+        "labelName": "missingVariables",
+        "conditions": {
+          "status_message": [
+            "MISSING_VARIABLES"
+          ]
+        }
+      },
+      {
+        "labelName": "undefinedError",
+        "conditions": {
+          "status_message": [
+            "UNDEFINED_ERROR"
+          ]
+        }
+      },
+      {
+        "labelName": "wfProcessed",
+        "conditions": {
+          "status_message": [
+            "WF_PROCESSED"
+          ]
+        }
+      }
+    ],
+    "inputFields": [
+      {
+        "typeDefinition": {
+          "name": "recipient_type",
+          "type": "enumeration",
+          "fieldType": "select",
+          "optionsUrl": "https://whatsapp-integration.transfunnel.io/api/options.php/recipients"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "provider",
+          "type": "enumeration",
+          "fieldType": "select",
+          "optionsUrl": "https://whatsapp-integration.transfunnel.io/api/options.php/providers"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "campaign_name",
+          "type": "string",
+          "fieldType": "text"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": false
+      },
+      {
+        "typeDefinition": {
+          "name": "tw_message_type",
+          "type": "enumeration",
+          "fieldType": "select",
+          "optionsUrl": "https://whatsapp-integration.transfunnel.io/api/options.php/message-types"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "tw_content_template",
+          "type": "enumeration",
+          "fieldType": "select",
+          "optionsUrl": "https://whatsapp-integration.transfunnel.io/api/options.php/tw-templates"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "tw_content_variables",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": false
+      },
+      {
+        "typeDefinition": {
+          "name": "tw_message",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "tw_media_url",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "tw_media_caption",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": false
+      },
+      {
+        "typeDefinition": {
+          "name": "tw_location_message",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "tw_location_latitude",
+          "type": "string",
+          "fieldType": "text"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "tw_location_longitude",
+          "type": "string",
+          "fieldType": "text"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "kl_message_type",
+          "type": "enumeration",
+          "fieldType": "select",
+          "optionsUrl": "https://whatsapp-integration.transfunnel.io/api/options.php/message-types"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "text_template",
+          "type": "enumeration",
+          "fieldType": "select",
+          "optionsUrl": "https://whatsapp-integration.transfunnel.io/api/options.php/kl-templates"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "text_template_params",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": false
+      },
+      {
+        "typeDefinition": {
+          "name": "media_template",
+          "type": "enumeration",
+          "fieldType": "select",
+          "optionsUrl": "https://whatsapp-integration.transfunnel.io/api/options.php/kl-templates"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "template_media_url",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "media_template_params",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": false
+      },
+      {
+        "typeDefinition": {
+          "name": "kl_message",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "kl_media_url",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": true
+      },
+      {
+        "typeDefinition": {
+          "name": "kl_media_caption",
+          "type": "string",
+          "fieldType": "textarea"
+        },
+        "supportedValueTypes": [
+          "STATIC_VALUE"
+        ],
+        "isRequired": false
+      }
+    ],
+    "inputFieldDependencies": [
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "provider",
+        "dependentFieldValue": "Twilio",
+        "targetFieldNames": [
+          "tw_message_type"
+        ]
+      },
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "tw_message_type",
+        "dependentFieldValue": "tw_template",
+        "targetFieldNames": [
+          "tw_content_template",
+          "tw_content_variables"
+        ]
+      },
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "tw_message_type",
+        "dependentFieldValue": "tw_text",
+        "targetFieldNames": [
+          "tw_message"
+        ]
+      },
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "tw_message_type",
+        "dependentFieldValue": "tw_media",
+        "targetFieldNames": [
+          "tw_media_url",
+          "tw_media_caption"
+        ]
+      },
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "tw_message_type",
+        "dependentFieldValue": "tw_location",
+        "targetFieldNames": [
+          "tw_location_message",
+          "tw_location_latitude",
+          "tw_location_longitude"
+        ]
+      },
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "provider",
+        "dependentFieldValue": "Kaleyra",
+        "targetFieldNames": [
+          "kl_message_type"
+        ]
+      },
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "kl_message_type",
+        "dependentFieldValue": "text_template",
+        "targetFieldNames": [
+          "text_template_params",
+          "text_template"
+        ]
+      },
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "kl_message_type",
+        "dependentFieldValue": "media_template",
+        "targetFieldNames": [
+          "media_template",
+          "template_media_url",
+          "media_template_params"
+        ]
+      },
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "kl_message_type",
+        "dependentFieldValue": "kl_text",
+        "targetFieldNames": [
+          "kl_message"
+        ]
+      },
+      {
+        "dependencyType": "CONDITIONAL_SINGLE_FIELD",
+        "dependentFieldName": "kl_message_type",
+        "dependentFieldValue": "kl_media",
+        "targetFieldNames": [
+          "kl_media_url",
+          "kl_media_caption"
+        ]
+      }
+    ],
+    "outputFields": [
+      {
+        "typeDefinition": {
+          "name": "status_message",
+          "type": "string",
+          "fieldType": "text"
+        }
+      }
+    ],
+    "objectTypes": [
+      "CONTACT"
+    ],
+    "objectRequestOptions": {
+      "properties": [
+        "firstname",
+        "lastname",
+        "mobilephone",
+        "phone"
+      ]
+    },
+    "labels": {
+      "en": {
+        "appDisplayName": "WhatsApp Integration by Transfunnel",
+        "actionName": "Send WhatsApp Message (New)",
+        "actionCardContent": "Send Message on WhatsApp through {{provider}}",
+        "actionDescription": "Note: First Message sent to a Contact, every 24 hours, MUST be a templated message as per WhatsApp regulations",
+        "inputFieldLabels": {
+          "recipient_type": "Recipient",
+          "provider": "Provider",
+          "campaign_name": "Campaign",
+          "tw_message_type": "Message Type",
+          "tw_message": "Message",
+          "tw_media_caption": "Message/Caption",
+          "tw_media_url": "Media URL",
+          "tw_location_message": "Message",
+          "tw_location_latitude": "Latitude",
+          "tw_location_longitude": "Longitude",
+          "tw_content_template": "Content Template",
+          "tw_content_variables": "Template Tokens",
+          "kl_message_type": "Message Type",
+          "text_template": "Templates",
+          "text_template_params": "Template Parameters",
+          "media_template": "Templates",
+          "media_template_params": "Template Parameters",
+          "template_media_url": "Media URL",
+          "kl_message": "Message",
+          "kl_media_caption": "Message/Caption",
+          "kl_media_url": "Media URL"
+        },
+        "inputFieldDescriptions": {
+          "campaign_name": "Only lowercase letters, numbers, and underscores are allowed, without spaces. Cannot start with numbers or underscores.",
+          "tw_message_type": "Type of Message to send",
+          "tw_media_url": "URL of the Media to Send",
+          "tw_content_template": "ID of the Template created in the Twilio Content Template Builder",
+          "tw_content_variables": "Template Variables, in ASC order (Use a semi-colon (;) to separate multiple values)",
+          "kl_message_type": "Type of Message to send",
+          "text_template": "List of Text Templates",
+          "text_template_params": "Use a semi-colon (;) to separate multiple values",
+          "media_template": "List of Media Templates",
+          "media_template_params": "Use a semi-colon (;) to separate multiple values",
+          "template_media_url": "URL of the Media to Send",
+          "kl_media_url": "URL of the Media to Send"
+        },
+        "outputFieldLabels": {
+          "status_message": "Status Message"
+        },
+        "executionRules": {
+          "accessDenied": "Access is Denied! Reach out to support@transfunnel.com for support!",
+          "emptyPayload": "Invalid Twilio Payload!",
+          "incompletePayload": "Incomplete Twilio Payload!",
+          "emptyResponse": "Empty Twilio Response!",
+          "invalidSignature": "Request Signature is invalid!",
+          "missingContact": "Selected Contact number is missing!",
+          "missingCredentials": "Twilio API Credentials not found!",
+          "missingMedia": "Media URL is missing!",
+          "missingMessage": "Message is missing!",
+          "missingPlaceName": "Cannot send Location Message without Name of Place!",
+          "missingCoordinates": "Cannot send Location Message without Coordinates!",
+          "missingTemplate": "Selected template not found!",
+          "missingVariables": "This template requires variable(s) to be added!",
+          "undefinedError": "Undefined error has occurred. Try again later!",
+          "wfProcessed": "Workflow Processed!"
+        }
+      }
+    }
+  }
+}
