@@ -1,0 +1,80 @@
+{
+	"uid": "outbound-event",
+	"type": "app-event",
+	"config": {
+		"name": "Outbound Message",
+		"objectType": "CONTACT",
+		"headerTemplate": "WhatsApp Message | {{ message_type }}",
+		"detailTemplate": "{{#each extraData.response}}\n  **{{title}}**: {{details}}\n{{/each}}",
+		"properties": [
+			{
+				"label": "Error Code",
+				"name": "error_code",
+				"type": "string",
+				"objectProperty": "tf_wa_outb_message_err_code"
+			},
+			{
+				"label": "Error Message",
+				"name": "error_message",
+				"type": "string",
+				"objectProperty": "tf_wa_outb_err_text"
+			},
+			{
+				"label": "Campaign",
+				"name": "campaign",
+				"type": "string",
+				"objectProperty": "tf_wa_outb_campaign"
+			},
+			{
+				"label": "Date",
+				"name": "message_date",
+				"type": "string"
+			},
+			{
+				"label": "Message ID",
+				"name": "message_id",
+				"type": "string",
+				"objectProperty": "tf_wa_outb_id"
+			},
+			{
+				"label": "Media URL",
+				"name": "message_media_url",
+				"type": "string",
+				"objectProperty": "tf_wa_outb_media"
+			},
+			{
+				"label": "Receiver",
+				"name": "message_receiver",
+				"type": "string"
+			},
+			{
+				"label": "Status",
+				"name": "message_status",
+				"type": "string"
+			},
+			{
+				"label": "Message",
+				"name": "message_text",
+				"type": "string",
+				"objectProperty": "tf_wa_outb_text"
+			},
+			{
+				"label": "Type",
+				"name": "message_type",
+				"type": "string"
+			},
+			{
+				"label": "Content Template ID",
+				"name": "template_id",
+				"type": "string",
+				"objectProperty": "tf_wa_outb_template_id"
+			},
+			{
+				"label": "Content Template Name",
+				"name": "template_name",
+				"type": "string",
+				"objectProperty": "tf_wa_outb_template_name"
+			}
+		]
+	}
+}
