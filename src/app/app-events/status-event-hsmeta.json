@@ -1,0 +1,50 @@
+{
+  "uid": "status-event",
+  "type": "app-event",
+  "config": {
+    "name": "Message Status",
+    "objectType": "CONTACT",
+    "headerTemplate": "Message Status | {{ message_status }}",
+    "detailTemplate": "{{#each extraData.response}}\n  **{{title}}**: {{details}}\n{{/each}}",
+    "properties": [
+      {
+        "label": "Error Code",
+        "name": "error_code",
+        "type": "string"
+      },
+      {
+        "label": "Error Message",
+        "name": "error_message",
+        "type": "string"
+      },
+      {
+        "label": "Campaign",
+        "name": "message_campaign",
+        "type": "string",
+        "objectProperty": "tf_wa_status_campaign"
+      },
+      {
+        "label": "Message ID",
+        "name": "message_id",
+        "type": "string",
+        "objectProperty": "tf_wa_status_id"
+      },
+      {
+        "label": "Receiver",
+        "name": "message_receiver",
+        "type": "string"
+      },
+      {
+        "label": "Status",
+        "name": "message_status",
+        "type": "string",
+        "objectProperty": "tf_wa_status"
+      },
+      {
+        "label": "Timestamp",
+        "name": "message_timestamp",
+        "type": "string"
+      }
+    ]
+  }
+}

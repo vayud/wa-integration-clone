@@ -1,0 +1,52 @@
+{
+  "uid": "inbound-event",
+  "type": "app-event",
+  "config": {
+    "name": "Incoming Messages",
+    "objectType": "CONTACT",
+    "headerTemplate": "WhatsApp | {{ message_media_type }} received",
+    "detailTemplate": "{{#each extraData.response}}\n  **{{title}}**: {{details}}\n{{/each}}",
+    "properties": [
+      {
+        "label": "Message ID",
+        "name": "message_id",
+        "type": "string",
+        "objectProperty": "tf_wa_inb_id"
+      },
+      {
+        "label": "Media Type",
+        "name": "message_media_type",
+        "type": "string",
+        "objectProperty": "tf_wa_inb_media_type"
+      },
+      {
+        "label": "Media URL",
+        "name": "message_media_url",
+        "type": "string",
+        "objectProperty": "tf_wa_inb_media"
+      },
+      {
+        "label": "Sender",
+        "name": "message_sender",
+        "type": "string"
+      },
+      {
+        "label": "Sender Number",
+        "name": "message_sender_number",
+        "type": "string"
+      },
+      {
+        "label": "Message",
+        "name": "message_text",
+        "type": "string",
+        "objectProperty": "tf_wa_inb_text"
+      },
+      {
+        "label": "Timestamp",
+        "name": "message_timestamp",
+        "type": "string",
+        "objectProperty": "tf_wa_inb_timestamp"
+      }
+    ]
+  }
+}
