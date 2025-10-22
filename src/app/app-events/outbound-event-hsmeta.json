@@ -4,8 +4,8 @@
 	"config": {
 		"name": "Outbound Message",
 		"objectType": "CONTACT",
-		"headerTemplate": "WhatsApp Message | {{ message_type }}",
-		"detailTemplate": "{{#each extraData.response}}\n  **{{title}}**: {{details}}\n{{/each}}",
+		"headerTemplate": "WhatsApp Message | **{{ message_type }}**",
+		"detailTemplate": "{{#if extraData.response}}{{#each extraData.response}}\n **{{title}}**: {{details}}\n{{/each}}{{else}}No additional information available.{{/if}}",
 		"properties": [
 			{
 				"label": "Error Code",

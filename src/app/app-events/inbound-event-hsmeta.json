@@ -5,7 +5,7 @@
     "name": "Incoming Messages",
     "objectType": "CONTACT",
     "headerTemplate": "WhatsApp | {{ message_media_type }} received",
-    "detailTemplate": "{{#each extraData.response}}\n  **{{title}}**: {{details}}\n{{/each}}",
+    "detailTemplate": "{{#if extraData.response}}{{#each extraData.response}}\n **{{title}}**: {{details}}\n{{/each}}{{else}}No additional information available.{{/if}}",
     "properties": [
       {
         "label": "Message ID",
