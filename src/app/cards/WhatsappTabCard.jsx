@@ -86,15 +86,16 @@ const CombinedCard = ({ context }) => {
       })}`;
       const res = await hubspot.fetch(url, { timeout: 2000 });
       const json = await res.json();
-      if (json.status === "error" || !json[tabConf.responseKey]) {
+      console.log(json);
+      if (json.status === "empty") {
+        setTabData(prev => ({
+          ...prev,
+          [key]: { loading: false, data: { empty: true, message: json.message }, error: null },
+        }));
+      } else if (json.status === "error" || !json[tabConf.responseKey]) {
         setTabData(prev => ({
           ...prev,
           [key]: { loading: false, data: null, error: json.message || "Invalid data" },
-        }));
-      } else if (json.status === "empty") {
-        setTabData(prev => ({
-          ...prev,
-          [key]: { loading: false, data: "empty", error: json.message },
         }));
       } else {
         setTabData(prev => ({
@@ -128,14 +129,7 @@ const CombinedCard = ({ context }) => {
     if (selectedTab !== key && !data && !loading && !error) return null;
     if (loading)
       return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
-    if (error) return <ErrorState title="Error" message={error} />;
-    if (data === "empty")
-      return (
-        <EmptyState title="No Data">
-          <Text>{error}</Text>
-        </EmptyState>
-      );
-    return <Component data={data} />;
+    return <Component data={data} error={error} />;
   };
 
   return (

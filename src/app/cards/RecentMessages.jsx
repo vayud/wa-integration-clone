@@ -23,10 +23,10 @@ const STATUS_VARIANT_MAP = {
 	Queued: "warning",
 };
 
-const MessagesTab = ({ data }) => {
+const MessagesTab = ({ data, error }) => {
 	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
 
-	if (data.error) return <ErrorState title="Something went wrong." message={data.error} />;
+	if (error) return <ErrorState title="Something went wrong." message={error} />;
 
 	if (data.empty)
 		return (

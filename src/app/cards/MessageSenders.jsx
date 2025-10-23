@@ -1,8 +1,8 @@
 import { BarChart, Text, Flex, EmptyState, ErrorState, LoadingSpinner } from "@hubspot/ui-extensions";
 
-const SendersTab = ({ data }) => {
+const SendersTab = ({ data, error }) => {
 	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
-	if (data.error) return <ErrorState title="Something went wrong." message={data.error} />;
+	if (error) return <ErrorState title="Something went wrong." message={error} />;
 	if (data.empty)
 		return (
 			<EmptyState title="Nothing here yet" layout="vertical" reverseOrder={true}>
