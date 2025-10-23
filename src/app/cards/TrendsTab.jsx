@@ -35,7 +35,7 @@ const TrendsTab = ({ data, error }) => {
 			<Flex direction="column" align="center">
 				<Text variant="microcopy">
 					The chart displays a monthly breakdown of WhatsApp messages for this contact, covering up to the last 12
-					months.
+					months. Months with no activity are excluded.
 				</Text>
 			</Flex>
 		</>
