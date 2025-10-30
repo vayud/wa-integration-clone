@@ -43,7 +43,7 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 	useEffect(() => {
 		const loadProperties = async () => {
 			try {
-				const props = await fetchCrmObjectProperties(["email", "phone", "mobilephone"]);
+				const props = await fetchCrmObjectProperties(["firstname", "lastname", "email", "phone", "mobilephone"]);
 				setContactProperties(props);
 			} catch (err) {
 				console.error("Error fetching CRM properties", err);
@@ -53,17 +53,17 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 	}, [fetchCrmObjectProperties]);
 
 	useEffect(() => {
-		if (!contactProperties.phone && !contactProperties.mobilephone && !contactProperties.email) return;
+		if (!contactProperties.firstname && !contactProperties.email && (!contactProperties.phone || !contactProperties.mobilephone)) return;
 
 		const fetchData = async () => {
 			const params = {
+				portalId: context.portal.id,
 				userId: context.user.id,
 				userEmail: context.user.email,
 				associatedObjectId: context.crm.objectId,
 				associatedObjectType: context.crm.objectTypeId,
-				portalId: context.portal.id,
-				firstname: context.user.firstName,
-				lastname: context.user.lastName,
+				firstname: contactProperties.firstname,
+				lastname: contactProperties.lastname,
 				email: contactProperties.email,
 				phone: contactProperties.phone,
 				mobilephone: contactProperties.mobilephone,
