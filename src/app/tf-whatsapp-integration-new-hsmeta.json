@@ -38,6 +38,7 @@
       ],
       "fetch": [
         "https://whatsapp-integration.transfunnel.io/send.php",
+        "https://whatsapp-integration.transfunnel.io/api/chart-download.php",
         "https://whatsapp-integration.transfunnel.io/api/contact-stats.php",
         "https://whatsapp-integration.transfunnel.io/api/crm-card.php",
         "https://whatsapp-integration.transfunnel.io/api/options.php",
