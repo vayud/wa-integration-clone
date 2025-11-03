@@ -1,13 +1,6 @@
 import { useState, useEffect } from "react";
-import {
-  hubspot,
-  Tabs,
-  Tab,
-  LoadingSpinner,
-  ErrorState,
-  EmptyState,
-  Text,
-} from "@hubspot/ui-extensions";
+import { hubspot, Tabs, Tab, LoadingSpinner } from "@hubspot/ui-extensions";
+
 import MessagesTab from "./RecentMessages";
 import SendersTab from "./MessageSenders";
 import StatsTab from "./StatsTab";
@@ -129,7 +122,7 @@ const CombinedCard = ({ context }) => {
     if (selectedTab !== key && !data && !loading && !error) return null;
     if (loading)
       return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
-    return <Component data={data} error={error} />;
+    return <Component data={data} error={error} context={context} />;
   };
 
   return (
