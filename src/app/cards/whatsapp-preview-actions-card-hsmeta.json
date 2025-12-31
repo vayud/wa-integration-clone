@@ -1,0 +1,13 @@
+{
+  "uid": "whatsapp-preview-actions-card",
+  "type": "card",
+  "config": {
+    "name": "WhatsApp Integration Actions",
+    "location": "crm.preview",
+    "description": "A custom card for record preview panel",
+    "entrypoint": "/app/cards/WhatsAppPreviewActionsCard.tsx",
+    "objectTypes": [
+      "contacts"
+    ]
+  }
+}
