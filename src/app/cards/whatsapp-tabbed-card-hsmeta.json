@@ -1,0 +1,13 @@
+{
+  "uid": "whatsapp-tabs-card",
+  "type": "card",
+  "config": {
+    "name": "WhatsApp Integration Stats",
+    "location": "crm.record.tab",
+    "description": "A custom card for the middle column on contact records.",
+    "entrypoint": "/app/cards/WhatsAppTabsCard.tsx",
+    "objectTypes": [
+      "contacts"
+    ]
+  }
+}

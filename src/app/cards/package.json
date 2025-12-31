@@ -45,5 +45,10 @@
       "main": "PreviewActions.jsx",
       "previewImage": "assets/contact-preview-card-preview.jpg"
     }
-  ]
+  ],
+  "devDependencies": {
+    "@types/react": "^18.3.26",
+    "eslint": "^9.37.0",
+    "typescript": "^5.3.3"
+  }
 }
