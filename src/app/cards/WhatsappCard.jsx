@@ -12,6 +12,7 @@ import {
 	LoadingSpinner,
 	Panel,
 	PanelBody,
+	PanelSection,
 	Select,
 	Tag,
 	Text,
@@ -223,6 +224,7 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 								title: frames.form.label,
 								width: frames.form.width,
 								height: frames.form.height,
+								flush: true
 							})
 						}
 					>
@@ -248,61 +250,62 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 						size="sm"
 						variant="secondary"
 						overlay={
-							<Panel variant="modal" id="panel-contact-form" title="Contact Support" aria-label="Contact Support">
+							<Panel variant="default" id="panel-contact-form" title="Contact Support" aria-label="Contact Support">
 								<PanelBody>
-									<Text>
-										Need help? Submit your query using the form below and our support team will get in touch with you
-										shortly.
-									</Text>
-									<Form autoComplete="off" onSubmit={handleFormSubmit}>
-										<Input
-											label="Name"
-											name="name"
-											placeholder="Enter your name..."
-											value={formValues.name}
-											onChange={(val) => setFormValues((prev) => ({ ...prev, name: val }))}
-											required
-										/>
-										<Input
-											label="Email"
-											name="email"
-											type="text"
-											placeholder="your@email.com"
-											value={formValues.email}
-											onChange={(val) => setFormValues((prev) => ({ ...prev, email: val }))}
-											required
-										/>
-										<Select
-											name="reason"
-											label="Support Reason"
-											value={formValues.reason}
-											onChange={(val) => setFormValues((prev) => ({ ...prev, reason: val }))}
-											options={[
-												{ label: "Select a reason", value: "" },
-												{ label: "Billing or Payment Issue", value: "billing" },
-												{ label: "Request a New Feature", value: "feature" },
-												{ label: "Bug or Technical Problem", value: "technical" },
-												{ label: "Account or Access Issue", value: "account" },
-												{ label: "Other", value: "other" },
-											]}
-											required
-										/>
-										<TextArea
-											rows={6}
-											name="message"
-											label="Message"
-											resize="none"
-											placeholder="Describe your issue in as much detail as possible..."
-											maxLength={1600}
-											value={formValues.message}
-											onChange={(val) => setFormValues((prev) => ({ ...prev, message: val }))}
-											required
-										/>
-										<Divider />
-										<Button type="submit" size="md" variant="primary">
-											Submit
-										</Button>
-									</Form>
+									<PanelSection>
+										<Text>
+											Need help? Submit your query using the form below and our team will get in touch with you.
+										</Text>
+										<Form autoComplete="off" onSubmit={handleFormSubmit}>
+											<Input
+												label="Name"
+												name="name"
+												placeholder="Enter your name..."
+												value={formValues.name}
+												onChange={(val) => setFormValues((prev) => ({ ...prev, name: val }))}
+												required
+											/>
+											<Input
+												label="Email"
+												name="email"
+												type="text"
+												placeholder="your@email.com"
+												value={formValues.email}
+												onChange={(val) => setFormValues((prev) => ({ ...prev, email: val }))}
+												required
+											/>
+											<Select
+												name="reason"
+												label="Support Reason"
+												value={formValues.reason}
+												onChange={(val) => setFormValues((prev) => ({ ...prev, reason: val }))}
+												options={[
+													{ label: "Select a reason", value: "" },
+													{ label: "Billing or Payment Issue", value: "billing" },
+													{ label: "Request a New Feature", value: "feature" },
+													{ label: "Bug or Technical Problem", value: "technical" },
+													{ label: "Account or Access Issue", value: "account" },
+													{ label: "Other", value: "other" },
+												]}
+												required
+											/>
+											<TextArea
+												rows={6}
+												name="message"
+												label="Message"
+												resize="none"
+												placeholder="Describe your issue in as much detail as possible..."
+												maxLength={1600}
+												value={formValues.message}
+												onChange={(val) => setFormValues((prev) => ({ ...prev, message: val }))}
+												required
+											/>
+											<Divider />
+											<Button type="submit" size="md" variant="primary">
+												Submit
+											</Button>
+										</Form>
+									</PanelSection>
 								</PanelBody>
 							</Panel>
 						}
