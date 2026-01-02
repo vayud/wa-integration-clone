@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	hubspot,
 	Button,
@@ -19,21 +19,50 @@ import {
 	TextArea,
 	Tile,
 } from "@hubspot/ui-extensions";
-
-// Mapping for billing status to Tag variant
-const STATUS_VARIANT_MAP = {
-	Active: "success",
-	Cancelled: "danger",
-	Trialing: "info",
-	Paused: "warning",
-	Inactive: "default",
-};
+import { contactPropertiesToRetrieve, supportReasonOptions, STATUS_VARIANT_MAP } from "./constants/constants";
 
 const baseApiUrl = "https://whatsapp-integration.transfunnel.io/api";
 
-const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, closeOverlay }) => {
-	const [data, setData] = useState(null);
-	const [contactProperties, setContactProperties] = useState({});
+interface ContactProperties {
+	firstname?: string;
+	lastname?: string;
+	email?: string;
+	phone?: string;
+	mobilephone?: string;
+}
+
+interface CardData {
+	billing: {
+		period: string;
+		plan: string;
+		status: string;
+	};
+	frames: {
+		form: {
+			label: string;
+			height: number;
+			width: number;
+			url: string;
+		};
+		conversation: {
+			label: string;
+			height: number;
+			width: number;
+			url: string;
+		};
+	};
+	guides: {
+		setup: string;
+		templates: string;
+	};
+}
+
+const PrimaryCard = ({ context, fetchCrmObjectProperties, openIframe, addAlert, closeOverlay }: any) => {
+	const [contactProperties, setContactProperties] = useState<ContactProperties>({});
+	const [loading, setLoading] = useState<boolean>(false);
+	const [data, setData] = useState<CardData | null>(null);
+	const [error, setError] = useState<string | null>(null);
+	const [hasFetched, setHasFetched] = useState(false);
 	const [formValues, setFormValues] = useState({
 		name: `${context.user.firstName || ""} ${context.user.lastName || ""}`.trim(),
 		email: context.user.email || "",
@@ -44,8 +73,8 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 	useEffect(() => {
 		const loadProperties = async () => {
 			try {
-				const props = await fetchCrmObjectProperties(["firstname", "lastname", "email", "phone", "mobilephone"]);
-				setContactProperties(props);
+				const properties = await fetchCrmObjectProperties(contactPropertiesToRetrieve);
+				setContactProperties(properties);
 			} catch (err) {
 				console.error("Error fetching CRM properties", err);
 			}
@@ -54,43 +83,66 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 	}, [fetchCrmObjectProperties]);
 
 	useEffect(() => {
-		if (!contactProperties.firstname && !contactProperties.email && (!contactProperties.phone || !contactProperties.mobilephone)) return;
+		if (
+			!contactProperties.firstname &&
+			!contactProperties.email &&
+			(!contactProperties.phone || !contactProperties.mobilephone)
+		)
+			return;
+		if (hasFetched) return;
+
+		const endpoint = `${baseApiUrl}/crm-card.php`;
+
+		const requestPayload = {
+			portalId: context.portal.id,
+			userId: context.user.id,
+			userEmail: context.user.email,
+			associatedObjectId: context.crm.objectId,
+			associatedObjectType: context.crm.objectTypeId,
+			firstname: contactProperties.firstname,
+			lastname: contactProperties.lastname,
+			email: contactProperties.email,
+			phone: contactProperties.phone,
+			mobilephone: contactProperties.mobilephone,
+		};
 
 		const fetchData = async () => {
-			const params = {
-				portalId: context.portal.id,
-				userId: context.user.id,
-				userEmail: context.user.email,
-				associatedObjectId: context.crm.objectId,
-				associatedObjectType: context.crm.objectTypeId,
-				firstname: contactProperties.firstname,
-				lastname: contactProperties.lastname,
-				email: contactProperties.email,
-				phone: contactProperties.phone,
-				mobilephone: contactProperties.mobilephone,
-			};
+			setLoading(true);
 
-			const url = `${baseApiUrl}/crm-card.php`;
 			try {
-				const response = await hubspot.fetch(url, {
-					timeout: 2_000,
+				const response = await hubspot.fetch(endpoint, {
 					method: "POST",
-					body: params,
+					body: requestPayload,
 				});
-				const data = await response.json();
+				const result = await response.json();
 
-				if (data.status === "error") {
-					setData({ error: data.message });
+				if (result.status === "error") {
+					setError(result.message || "Something went wrong");
+					setHasFetched(true);
 					return;
 				}
 
-				setData(data[params.portalId]);
+				// Response is keyed by portal ID
+				const portalData = result[context.portal.id];
+
+				if (!portalData) {
+					setError("No data available for this portal");
+					setHasFetched(true);
+				} else {
+					setData(portalData);
+					setHasFetched(true);
+				}
 			} catch (err) {
-				console.error("Something went wrong", err);
+				console.error("Error fetching card data:", err);
+				setError("Failed to load data");
+				setHasFetched(true);
+			} finally {
+				setLoading(false);
 			}
 		};
+
 		fetchData();
-	}, [context, contactProperties]);
+	}, [contactProperties, hasFetched, context]);
 
 	useEffect(() => {
 		if (context?.user) {
@@ -102,18 +154,43 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 		}
 	}, [context.user]);
 
-	if (!data) return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
-
-	if (data && data.error) {
-		return <ErrorState title="Something went wrong."></ErrorState>;
+	if (loading) {
+		return <LoadingSpinner layout="centered" size="sm" label="Loading..." />;
 	}
 
-	const billing = data.billing;
-	const frames = data.frames;
-	const guides = data.guides;
+	if (error) {
+		return (
+			<ErrorState title="Something went wrong." type="error">
+				<Text>{error}</Text>
+			</ErrorState>
+		);
+	}
+
+	if (!data) {
+		return null;
+	}
+
+	const handleOpenForm = () => {
+		openIframe({
+			uri: data.frames.form.url,
+			title: data.frames.form.label,
+			width: data.frames.form.width,
+			height: data.frames.form.height,
+			flush: true,
+		});
+	};
+
+	const handleOpenConversation = () => {
+		openIframe({
+			uri: data.frames.conversation.url,
+			title: data.frames.conversation.label,
+			width: data.frames.conversation.width,
+			height: data.frames.conversation.height,
+		});
+	};
 
 	const handleFormSubmit = async () => {
-		const errors = {};
+		const errors: Record<string, string> = {};
 
 		if (!formValues.name) errors.name = "Name is required";
 		if (!formValues.email) {
@@ -127,7 +204,6 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 		const valid = Object.keys(errors).length === 0;
 
 		if (!valid) {
-			// Determine title based on type of errors
 			const title = Object.values(errors).includes("Enter a valid email address")
 				? "Invalid Email Format!"
 				: "Missing Required Fields!";
@@ -140,7 +216,6 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 			return;
 		}
 
-		// Proceed with submission
 		try {
 			const response = await hubspot.fetch(`${baseApiUrl}/support.php`, {
 				timeout: 2000,
@@ -150,7 +225,7 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 
 			if (!response.ok) throw new Error("Submission failed");
 
-			if (response.status == 200) {
+			if (response.status === 200) {
 				setFormValues({
 					name: `${context.user.firstName || ""} ${context.user.lastName || ""}`.trim(),
 					email: context.user.email || "",
@@ -187,63 +262,34 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 				<Tile compact={true}>
 					<Flex gap="xs">
 						<Text format={{ fontWeight: "bold" }}>Subscription Status:</Text>
-						<Tag variant={STATUS_VARIANT_MAP[billing.status] || "default"}>{billing.status}</Tag>
+						<Tag variant={STATUS_VARIANT_MAP[data.billing.status] || "default"}>{data.billing.status}</Tag>
 					</Flex>
 					<Flex gap="xs">
 						<Text format={{ fontWeight: "bold" }}>Plan:</Text>
-						<Tag variant={billing.plan == "Starter" ? "default" : "info"}> {billing.plan} </Tag>
+						<Tag variant={data.billing.plan === "Starter" ? "default" : "info"}>{data.billing.plan}</Tag>
 					</Flex>
 					<Flex gap="xs">
 						<Text format={{ fontWeight: "bold" }}>Billing Period:</Text>
-						<Tag variant="default"> {billing.period} </Tag>
+						<Tag variant="default">{data.billing.period}</Tag>
 					</Flex>
 				</Tile>
 
 				<Tile compact={true}>
-					<Link href={guides.setup} target="_blank">
-						Integration Setup Guide
-					</Link>
+					<Link href={data.guides.setup}>Integration Setup Guide</Link>
 				</Tile>
 
 				<Tile compact={true}>
-					<Link href={guides.templates} target="_blank">
-						Templates Guide
-					</Link>
+					<Link href={data.guides.templates}>Templates Guide</Link>
 				</Tile>
 			</Flex>
 
 			<Flex direction="column" gap="md" align="center" justify="center">
 				<ButtonRow dropDownButtonOptions={{ size: "sm" }}>
-					<Button
-						size="sm"
-						type="button"
-						variant="primary"
-						onClick={() =>
-							openIframe({
-								uri: frames.form.url,
-								title: frames.form.label,
-								width: frames.form.width,
-								height: frames.form.height,
-								flush: true
-							})
-						}
-					>
-						{frames.form.label}
+					<Button size="sm" type="button" variant="primary" onClick={handleOpenForm}>
+						{data.frames.form.label}
 					</Button>
-					<Button
-						size="sm"
-						type="button"
-						variant="secondary"
-						onClick={() =>
-							openIframe({
-								uri: frames.conversation.url,
-								title: frames.conversation.label,
-								width: frames.conversation.width,
-								height: frames.conversation.height,
-							})
-						}
-					>
-						{frames.conversation.label}
+					<Button size="sm" type="button" variant="secondary" onClick={handleOpenConversation}>
+						{data.frames.conversation.label}
 					</Button>
 					<Button
 						type="button"
@@ -278,15 +324,8 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 												name="reason"
 												label="Support Reason"
 												value={formValues.reason}
-												onChange={(val) => setFormValues((prev) => ({ ...prev, reason: val }))}
-												options={[
-													{ label: "Select a reason", value: "" },
-													{ label: "Billing or Payment Issue", value: "billing" },
-													{ label: "Request a New Feature", value: "feature" },
-													{ label: "Bug or Technical Problem", value: "technical" },
-													{ label: "Account or Access Issue", value: "account" },
-													{ label: "Other", value: "other" },
-												]}
+												onChange={(val) => setFormValues((prev) => ({ ...prev, reason: String(val || "") }))}
+												options={supportReasonOptions}
 												required
 											/>
 											<TextArea
@@ -318,12 +357,12 @@ const DynamicCard = ({ context, fetchCrmObjectProperties, addAlert, openIframe, 
 	);
 };
 
-hubspot.extend(({ context, actions }) => (
-	<DynamicCard
+hubspot.extend<"crm.record.tab">(({ context, actions }) => (
+	<PrimaryCard
 		context={context}
-		addAlert={actions.addAlert}
 		openIframe={actions.openIframeModal}
 		fetchCrmObjectProperties={actions.fetchCrmObjectProperties}
+		addAlert={actions.addAlert}
 		closeOverlay={actions.closeOverlay}
 	/>
 ));
