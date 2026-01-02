@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { hubspot, Button, ButtonRow, ErrorState, Flex, LoadingSpinner } from "@hubspot/ui-extensions";
-import { contactPropertiesToRetrieve } from "./constants/properties";
+import { hubspot, Button, ButtonRow, ErrorState, Flex, LoadingSpinner, Text } from "@hubspot/ui-extensions";
+import { contactPropertiesToRetrieve } from "./constants/constants";
 
 interface ContactProperties {
 	firstname?: string;
@@ -118,11 +118,15 @@ const PreviewCard = ({ context, fetchCrmObjectProperties, openIframe }: any) => 
 	}, [contactProperties, hasFetched, context]);
 
 	if (loading) {
-		return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
+		return <LoadingSpinner layout="centered" size="sm" label="Loading..." />;
 	}
 
 	if (error) {
-		return <ErrorState title="Something went wrong.">{error}</ErrorState>;
+		return (
+			<ErrorState title="Something went wrong." type="error">
+				<Text>{error}</Text>
+			</ErrorState>
+		);
 	}
 
 	if (!data) {

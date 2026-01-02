@@ -80,7 +80,7 @@ const RecentMessagesTab = ({ context, isSelected }: any) => {
 	}
 
 	return (
-		<Flex direction="column" gap="flush">
+		<Flex direction="column" gap="xs">
 			{loading && <LoadingSpinner layout="centered" size="sm" label="Loading..." />}
 
 			{!loading && data?.empty && (
