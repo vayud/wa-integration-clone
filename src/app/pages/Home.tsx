@@ -39,6 +39,37 @@ import {
 
 const baseApiUrl = "https://whatsapp-integration.transfunnel.io/api";
 
+const guides = {
+	setup: "https://whatsapp-integration.transfunnel.io/install-guide.php",
+	templates: "https://whatsapp-integration.transfunnel.io/templates-guide.php",
+};
+
+const messageStatusVariantMap: Record<string, any> = {
+	Delivered: "success",
+	Read: "success",
+	Sent: "default",
+	Undelivered: "warning",
+	Queued: "warning",
+	Failed: "error",
+	Accepted: "info",
+};
+
+interface FormValues {
+	name: string;
+	email: string;
+	reason: string;
+	message: string;
+	[key: string]: string;
+}
+
+interface AllData {
+	messages: any[] | null;
+	senders: any[] | null;
+	counts: any | null;
+	trends: any[] | null;
+	templateUsage: any | null;
+}
+
 // Configuration for each data component
 const COMPONENTS_CONFIG = [
 	{
@@ -84,17 +115,6 @@ const buildQuery = (params: Record<string, string | number | boolean | null | un
 		.filter(([_, val]) => val != null && val !== "")
 		.map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(String(val))}`)
 		.join("&");
-
-// Mapping for message_status to Tag variant
-const STATUS_VARIANT_MAP = {
-	Accepted: "info",
-	Delivered: "success",
-	Failed: "danger",
-	Read: "success",
-	Sent: "default",
-	Undelivered: "warning",
-	Queued: "warning",
-};
 
 // Helper function to format message text with markdown-like formatting
 const formatMessageComponents = (input: string) => {
@@ -150,16 +170,32 @@ const getEnabledComponentIds = () => {
 		.join(",");
 };
 
-const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => {
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
-	const [formValues, setFormValues] = useState({
+interface PageContext {
+	user?: {
+		firstName?: string;
+		lastName?: string;
+		email?: string;
+	};
+	portal?: {
+		id?: string | number;
+	};
+}
+
+interface PageActions {
+	addAlert?: (alert: { title: string; message: string; type?: string }) => void;
+	closeOverlay?: (id: string) => void;
+}
+
+const NewHomesPage = ({ context, actions }: { context: PageContext; actions?: PageActions }) => {
+	const [loading, setLoading] = useState<boolean>(true);
+	const [error, setError] = useState<string | null>(null);
+	const [formValues, setFormValues] = useState<FormValues>({
 		name: `${context.user?.firstName || ""} ${context.user?.lastName || ""}`.trim(),
 		email: context.user?.email || "",
 		reason: "",
 		message: "",
 	});
-	const [allData, setAllData] = useState({
+	const [allData, setAllData] = useState<AllData>({
 		messages: null,
 		senders: null,
 		counts: null,
@@ -211,14 +247,14 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 		if (context?.user) {
 			setFormValues((prev) => ({
 				...prev,
-				name: `${context.user.firstName || ""} ${context.user.lastName || ""}`.trim(),
-				email: context.user.email || "",
+				name: `${context.user?.firstName || ""} ${context.user?.lastName || ""}`.trim(),
+				email: context.user?.email || "",
 			}));
 		}
 	}, [context.user]);
 
-	const handleFormSubmit = async () => {
-		const errors: any = {};
+	const handleFormSubmit = async (): Promise<void> => {
+		const errors: Record<string, string> = {};
 		if (!formValues.name) errors.name = "Name is required";
 		if (!formValues.email) {
 			errors.email = "Email is required";
@@ -286,11 +322,11 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 	};
 
 	// Helper function to check if data is empty
-	const isEmpty = (data: any) =>
+	const isEmpty = (data: any): boolean =>
 		!data || (Array.isArray(data) && data.length === 0) || (typeof data === "object" && Object.keys(data).length === 0);
 
 	// Helper function to render tile content based on loading/error/data state
-	const renderTileContent = (data: any, emptyMessage: string, children: React.ReactNode) => {
+	const renderTileContent = (data: any, emptyMessage: string, children: React.ReactNode): React.ReactNode => {
 		if (loading) {
 			return <LoadingSpinner layout="centered" size="md" label="Loading..." />;
 		}
@@ -344,7 +380,7 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 										name="reason"
 										label="Support Reason"
 										value={formValues.reason}
-										onChange={(val: any) => setFormValues((prev) => ({ ...prev, reason: String(val) }))}
+										onChange={(val) => setFormValues((prev) => ({ ...prev, reason: String(val || "") }))}
 										options={[
 											{ label: "Select a reason", value: "" },
 											{ label: "Billing or Payment Issue", value: "billing" },
@@ -363,7 +399,7 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 										placeholder="Describe your issue in as much detail as possible..."
 										maxLength={1600}
 										value={formValues.message}
-										onChange={(val: any) => setFormValues((prev) => ({ ...prev, message: String(val) }))}
+										onChange={(val) => setFormValues((prev) => ({ ...prev, message: String(val || "") }))}
 										required
 									/>
 									<Divider />
@@ -379,7 +415,7 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 				</PrimaryHeaderActionButton>
 				<SecondaryHeaderActionButton
 					href={{
-						url: `${baseApiUrl}/install-guide.php?portalId=${encodeURIComponent(String(context.portal?.id || ""))}`,
+						url: `${guides.setup}?portalId=${encodeURIComponent(String(context.portal?.id || ""))}`,
 						external: true,
 					}}
 				>
@@ -387,7 +423,7 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 				</SecondaryHeaderActionButton>
 				<SecondaryHeaderActionButton
 					href={{
-						url: `${baseApiUrl}/templates-guide.php`,
+						url: guides.templates,
 						external: true,
 					}}
 				>
@@ -487,7 +523,7 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 												? `Message Sent | ${message.timestamp}`
 												: `Message Received | ${message.timestamp}`;
 										return (
-											<Accordion key={index} title={itemTitle}>
+											<Accordion key={index} title={itemTitle} size="md">
 												<Flex direction="column" gap="sm" justify="center" align="center">
 													{/* <Text> {message.message} </Text> */}
 													<Flex wrap="wrap" gap="xs" align="baseline">
@@ -502,7 +538,12 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 													<DescriptionList direction="row">
 														{message.action === "sent" && (
 															<DescriptionListItem label="Status">
-																<Tag variant={STATUS_VARIANT_MAP[message.message_status] || "default"}>
+																<Tag
+																	variant={
+																		(messageStatusVariantMap as Record<string, any>)[message.message_status] ||
+																		"default"
+																	}
+																>
 																	{message.message_status || "N/A"}
 																</Tag>
 															</DescriptionListItem>
@@ -554,7 +595,7 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 								"No recent sender data to display",
 								<>
 									<BarChart
-										data={allData.senders}
+										data={allData.senders || []}
 										axes={{
 											x: { field: "userEmail", fieldType: "category", label: "Sender" },
 											y: { field: "count", fieldType: "linear", label: "Messages Sent" },
@@ -627,6 +668,6 @@ const NewHomesPage = ({ context, actions }: { context: any; actions?: any }) => 
 	);
 };
 
-hubspot.extend<"home">(({ context, actions }) => {
+hubspot.extend<"home">(({ context, actions }: { context: PageContext; actions: any }) => {
 	return <NewHomesPage context={context} actions={actions} />;
 });
