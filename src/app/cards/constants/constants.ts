@@ -26,10 +26,31 @@ export const supportReasonOptions = [
 /**
  * Mapping for billing status to Tag variant
  */
-export const STATUS_VARIANT_MAP: Record<string, "success" | "error" | "info" | "warning" | "default"> = {
+export const statusVariantMap: Record<string, "success" | "error" | "info" | "warning" | "default"> = {
 	Active: "success",
 	Cancelled: "error",
 	Trialing: "info",
 	Paused: "warning",
 	Inactive: "default",
+};
+
+/**
+ * Mapping for message status to Tag variant
+ */
+export const messageStatusVariantMap: Record<string, "success" | "error" | "info" | "warning" | "default"> = {
+	Accepted: "info",
+	Delivered: "success",
+	Failed: "error",
+	Read: "success",
+	Sent: "default",
+	Undelivered: "warning",
+	Queued: "warning",
+};
+
+/**
+ * Guide URLs
+ */
+export const guides = {
+	setup: "https://whatsapp-integration.transfunnel.io/install-guide.php",
+	templates: "https://whatsapp-integration.transfunnel.io/templates-guide.php",
 };

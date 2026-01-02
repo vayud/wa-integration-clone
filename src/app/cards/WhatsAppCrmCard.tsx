@@ -19,7 +19,7 @@ import {
 	TextArea,
 	Tile,
 } from "@hubspot/ui-extensions";
-import { contactPropertiesToRetrieve, supportReasonOptions, STATUS_VARIANT_MAP } from "./constants/constants";
+import { contactPropertiesToRetrieve, supportReasonOptions, statusVariantMap, guides } from "./constants/constants";
 
 const baseApiUrl = "https://whatsapp-integration.transfunnel.io/api";
 
@@ -50,10 +50,6 @@ interface CardData {
 			width: number;
 			url: string;
 		};
-	};
-	guides: {
-		setup: string;
-		templates: string;
 	};
 }
 
@@ -262,7 +258,7 @@ const PrimaryCard = ({ context, fetchCrmObjectProperties, openIframe, addAlert, 
 				<Tile compact={true}>
 					<Flex gap="xs">
 						<Text format={{ fontWeight: "bold" }}>Subscription Status:</Text>
-						<Tag variant={STATUS_VARIANT_MAP[data.billing.status] || "default"}>{data.billing.status}</Tag>
+						<Tag variant={statusVariantMap[data.billing.status] || "default"}>{data.billing.status}</Tag>
 					</Flex>
 					<Flex gap="xs">
 						<Text format={{ fontWeight: "bold" }}>Plan:</Text>
@@ -275,11 +271,11 @@ const PrimaryCard = ({ context, fetchCrmObjectProperties, openIframe, addAlert, 
 				</Tile>
 
 				<Tile compact={true}>
-					<Link href={data.guides.setup}>Integration Setup Guide</Link>
-				</Tile>
+				<Link href={`${guides.setup}?portalId=${context.portal.id}`}>Integration Setup Guide</Link>
+			</Tile>
 
-				<Tile compact={true}>
-					<Link href={data.guides.templates}>Templates Guide</Link>
+			<Tile compact={true}>
+				<Link href={guides.templates}>Templates Guide</Link>
 				</Tile>
 			</Flex>
 
